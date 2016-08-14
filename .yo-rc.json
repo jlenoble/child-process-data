@@ -1,0 +1,11 @@
+{
+  "generator-wupjs": {
+    "module": "child-process-data",
+    "description": "A helper to handle data output from child processes",
+    "author": "Jason Lenoble",
+    "email": "jason.lenoble@gmail.com",
+    "github": "jlenoble",
+    "license": "MIT",
+    "Class": "ChildProcessData"
+  }
+}
