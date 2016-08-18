@@ -22,9 +22,17 @@ gulp.src = function() {
 const buildDir = 'build';
 const srcGlob = 'src/child-process-data.js';
 const testSrcGlob = 'test/*.test.js';
+const gulpSrcGlob = 'test/gulpfiles/*.js';
 
 const allSrcGlob = [srcGlob, testSrcGlob];
 const testBuildGlob = path.join(buildDir, testSrcGlob);
+
+const copy = () => {
+  return gulp.src(gulpSrcGlob)
+    .pipe(sourcemaps.init())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('build'));
+};
 
 const build = () => {
   return gulp.src(allSrcGlob, {base: process.cwd()})
@@ -60,7 +68,7 @@ const clean = () => {
 };
 
 gulp.task('clean', clean);
-gulp.task('build', build);
+gulp.task('build', gulp.parallel(copy, build));
 gulp.task('test', gulp.series('build', test));
 
 gulp.task('watch', watch);
