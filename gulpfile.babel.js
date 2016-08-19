@@ -26,16 +26,26 @@ const gulpSrcGlob = 'test/gulpfiles/*.js';
 
 const allSrcGlob = [srcGlob, testSrcGlob];
 const testBuildGlob = path.join(buildDir, testSrcGlob);
+const allBuildGlob = [
+  path.join(buildDir, path.basename(gulpSrcGlob)),
+  path.join(buildDir, srcGlob),
+  path.join(buildDir, testSrcGlob)
+];
 
 const copy = () => {
-  return gulp.src(gulpSrcGlob)
+  return gulp.src(gulpSrcGlob, {
+    since: gulp.lastRun(copy)
+  })
     .pipe(sourcemaps.init())
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('build'));
 };
 
 const build = () => {
-  return gulp.src(allSrcGlob, {base: process.cwd()})
+  return gulp.src(allSrcGlob, {
+    base: process.cwd(),
+    since: gulp.lastRun(build)
+  })
     .pipe(sourcemaps.init())
     .pipe(babel())
     .pipe(sourcemaps.write())
@@ -48,8 +58,9 @@ const test = () => {
 };
 
 const watch = (done) => {
+  gulp.watch(gulpSrcGlob, copy);
   gulp.watch(allSrcGlob, build);
-  gulp.watch(testBuildGlob, test);
+  gulp.watch(allBuildGlob, test);
   done();
 };
 
