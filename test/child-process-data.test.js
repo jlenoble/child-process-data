@@ -28,6 +28,8 @@ describe('Testing childProcessData', function() {
   });
 
   it(`childProcessData can capture continuous outputs`, function() {
+    this.timeout(3000);
+
     return gulpTest('gulpfile_gutil.log.js').then(res => {
       res = res.all();
       expect(res).to.match(/Working directory changed to.*child-process-data/);
@@ -39,8 +41,11 @@ describe('Testing childProcessData', function() {
   });
 
   it(`childProcessData can capture uncaught errors`, function() {
+    this.timeout(3000);
+
     return gulpTest('gulpfile_gulp-error.js').catch(err => {
       err = err.message;
+      console.log(err);
       expect(err).to.match(/child process stream closed with code 1/);
       expect(err).to.match(/Working directory changed to.*child-process-data/);
       expect(err).to.match(/Using gulpfile.*child-process-data.*gulp-error/);
@@ -51,6 +56,8 @@ describe('Testing childProcessData', function() {
   });
 
   it(`childProcessData can capture caught errors`, function() {
+    this.timeout(3000);
+
     return gulpTest('gulpfile_gulp-error_plumber.js').then(res => {
       res = res.all();
       expect(res).to.match(/Working directory changed to.*child-process-data/);

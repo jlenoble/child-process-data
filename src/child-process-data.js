@@ -88,12 +88,13 @@ function childProcessData(childProcess, options) {
 
       var found = false;
 
-      dataCallbacks.forEach(obj => {
+      dataCallbacks.some(obj => {
         var res = str.match(obj.regexp);
         if (res) {
           found = true;
           obj.callback(res[1], res[2], res[3], res[4]);
         }
+        return found;
       });
 
       if (!found) {
@@ -112,8 +113,12 @@ function childProcessData(childProcess, options) {
         resolve(options.result);
       } else {
         reject(new Error(`child process stream closed with code ${code}
-Buffered messages:
-${allMessages.join('')}`));
+>>>>stdout buffer
+${outMessages.join('')}<<<<end stdout buffer
+>>>>stderr buffer
+${errMessages.join('')}<<<<end stderr buffer
+>>>>dual buffer
+${allMessages.join('')}<<<<end dual buffer`));
       }
     };
 
