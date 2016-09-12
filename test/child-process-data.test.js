@@ -31,12 +31,13 @@ describe('Testing childProcessData', function() {
     this.timeout(3000);
 
     return gulpTest('gulpfile_gutil.log.js').then(res => {
-      res = res.all();
-      expect(res).to.match(/Working directory changed to.*child-process-data/);
-      expect(res).to.match(/Using gulpfile.*child-process-data.*gutil\.log/);
-      expect(res).to.match(/Starting 'subtest'/);
-      expect(res).to.match(/Test message \d: Hello!/);
-      expect(res).to.match(/Finished 'subtest'/);
+      const all = res.all();
+      expect(all).to.match(/Working directory changed to.*child-process-data/);
+      expect(all).to.match(/Using gulpfile.*child-process-data.*gutil\.log/);
+      expect(all).to.match(/Starting 'subtest'/);
+      expect(all).to.match(/Test message \d: Hello!/);
+      expect(all).to.match(/Finished 'subtest'/);
+      res.childProcess.kill();
     });
   });
 
