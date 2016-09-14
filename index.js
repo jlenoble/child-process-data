@@ -121,7 +121,9 @@ function childProcessData(childProcess, options) {
       if (!code) {
         resolve(options.result);
       } else {
-        reject(new Error('child process stream closed with code ' + code + '\n>>>>stdout buffer\n' + outMessages.join('') + '<<<<end stdout buffer\n>>>>stderr buffer\n' + errMessages.join('') + '<<<<end stderr buffer\n>>>>dual buffer\n' + allMessages.join('') + '<<<<end dual buffer'));
+        var error = new Error('child process stream closed with code ' + code + '\n>>>>stdout buffer\n' + outMessages.join('') + '<<<<end stdout buffer\n>>>>stderr buffer\n' + errMessages.join('') + '<<<<end stderr buffer\n>>>>dual buffer\n' + allMessages.join('') + '<<<<end dual buffer');
+        error.result = options.result;
+        reject(error);
       }
     };
 
