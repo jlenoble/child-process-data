@@ -115,6 +115,21 @@ function childProcessData(childProcess, options) {
       var str = data.toString(options.format);
       errMessages.push(str);
       allMessages.push(str);
+
+      var found = false;
+
+      dataCallbacks.some(function (obj) {
+        var res = str.match(obj.regexp);
+        if (res) {
+          found = true;
+          obj.callback(res[1], res[2], res[3], res[4]);
+        }
+        return found;
+      });
+
+      if (!found) {
+        process.stderr.write(_chalk2.default.yellow(str));
+      }
     });
 
     var callback = function callback(code) {
