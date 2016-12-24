@@ -17,7 +17,7 @@
     "arrow-parens": ["error", "as-needed"],
     "func-names": ["error", "never"],
     "indent": ["error", 2],
-    "no-param-reassign": ["error", {"props": true}],
+    "no-param-reassign": ["off"],
     "one-var": ["error", "never"],
     "quotes": ["error", "single", {"allowTemplateLiterals": true}],
     "require-jsdoc": ["off"],

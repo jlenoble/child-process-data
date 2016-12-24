@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-export default function makeOptions(opts) {
+export default function makeOptions (opts) {
   const options = Object.assign({
     format: 'utf-8',
     dataCallbacks: {

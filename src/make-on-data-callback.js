@@ -26,5 +26,5 @@ export default function makeOnDataCallback (
     if (!found) {
       process[std].write(chalk.yellow(str));
     }
-  }
+  };
 }
