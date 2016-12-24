@@ -1,147 +1,26 @@
-import {spawn} from 'child_process';
-import chalk from 'chalk';
+import checkChildProcess from './check-child-process';
+import makeOptions from './make-options';
+import makeDataCallbacks from './make-data-callbacks';
+import extendOptions from './extend-options';
+import makeOnDataCallback from './make-on-data-callback';
+import makeOnCloseCallback from './make-on-close-callback';
 
-const ChildProcess = spawn('true').constructor;
+export default function childProcessData (childProcess, opts) {
+  checkChildProcess(childProcess);
 
-function childProcessData (childProcess, opts) {
-  const options = Object.assign({
-    format: 'utf-8',
-    dataCallbacks: {
-      '(Starting) \'(\\w+)\'\\.\\.\\.': (action, task) => {
-        console.log(`${action} '${chalk.cyan(task)}'...`);
-        options.dataUp();
-      },
-      '(Finished) \'(\\w+)\' after (\\d+\\.?\\d* m?s)': (action, task,
-        duration) => {
-        console.log(
-          `${action} '${chalk.cyan(task)}' after ${chalk.magenta(duration)}`);
-        options.dataDown();
-      },
-      '\\[(\\d\\d:\\d\\d:\\d\\d)\\]': time => {
-        process.stdout.write(`[${chalk.gray(time)}] `);
-      },
-      '(Working directory changed to|Using gulpfile) (.+)': (action, path) => {
-        console.log(`${action} ${chalk.magenta(path)}`);
-      },
-    },
-    dataLevel: 0,
-    dataUp: () => {
-      options.dataLevel++;
-    },
-    dataDown: () => {
-      options.dataLevel--;
-      if (!options.dataLevel) {
-        options.resolve();
-      }
-    },
-  }, opts);
+  const options = makeOptions(opts);
+  const dataCallbacks = makeDataCallbacks(options.dataCallbacks);
 
-  let dataCallbacks = [];
-  Object.keys(options.dataCallbacks).forEach(key => {
-    dataCallbacks.push({
-      pattern: key,
-      regexp: new RegExp(key),
-      callback: options.dataCallbacks[key],
-    });
+  return new Promise((resolve, reject) => {
+    extendOptions(options, childProcess, resolve, reject);
+
+    const {format} = options;
+    const {outMessages, errMessages, allMessages} = options.result;
+
+    childProcess.stdout.on('data', makeOnDataCallback(format, outMessages,
+      allMessages, dataCallbacks, 'stdout'));
+    childProcess.stderr.on('data', makeOnDataCallback(format, errMessages,
+      allMessages, dataCallbacks, 'stderr'));
+    childProcess.on('close', makeOnCloseCallback(options, resolve, reject));
   });
-
-  const p = childProcess;
-  const outMessages = [];
-  const errMessages = [];
-  const allMessages = [];
-
-  if (!(p instanceof ChildProcess)) {
-    throw new TypeError('Not a ChildProcess instance ' + p);
-  }
-
-  if (!p.stdout) {
-    throw new ReferenceError('Undefined child process stdout');
-  }
-
-  if (!p.stderr) {
-    throw new ReferenceError('Undefined child process stderr');
-  }
-
-  const promise = new Promise((resolve, reject) => {
-    options.result = {
-      childProcess, outMessages, errMessages, allMessages,
-      out () {
-        return this.outMessages.join('');
-      },
-      err () {
-        return this.errMessages.join('');
-      },
-      all () {
-        return this.allMessages.join('');
-      },
-    };
-    options.resolve = () => {
-      resolve(options.result);
-    };
-    options.reject = reject;
-
-    p.stdout.on('data', function (data) {
-      const str = data.toString(options.format);
-      outMessages.push(str);
-      allMessages.push(str);
-
-      let found = false;
-
-      dataCallbacks.some(obj => {
-        const res = str.match(obj.regexp);
-        if (res) {
-          found = true;
-          obj.callback(res[1], res[2], res[3], res[4]);
-        }
-        return found;
-      });
-
-      if (!found) {
-        process.stdout.write(chalk.yellow(str));
-      }
-    });
-
-    p.stderr.on('data', function (data) {
-      const str = data.toString(options.format);
-      errMessages.push(str);
-      allMessages.push(str);
-
-      let found = false;
-
-      dataCallbacks.some(obj => {
-        const res = str.match(obj.regexp);
-        if (res) {
-          found = true;
-          obj.callback(res[1], res[2], res[3], res[4]);
-        }
-        return found;
-      });
-
-      if (!found) {
-        process.stderr.write(chalk.yellow(str));
-      }
-    });
-
-    const callback = function (code) {
-      if (!code) {
-        resolve(options.result);
-      } else {
-        let error = new Error(`child process stream closed with code ${code}
->>>>stdout buffer
-${outMessages.join('')}<<<<end stdout buffer
->>>>stderr buffer
-${errMessages.join('')}<<<<end stderr buffer
->>>>dual buffer
-${allMessages.join('')}<<<<end dual buffer`);
-        error.result = options.result;
-        reject(error);
-      }
-    };
-
-    p.on('close', callback);
-  });
-
-  return promise;
 }
-
-export default childProcessData;
