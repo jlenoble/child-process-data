@@ -6,6 +6,8 @@
     "email": "jason.lenoble@gmail.com",
     "github": "jlenoble",
     "license": "MIT",
-    "Class": "ChildProcessData"
+    "Class": "ChildProcessData",
+    "transpile": "es2015",
+    "addons": []
   }
 }

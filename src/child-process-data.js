@@ -3,8 +3,8 @@ import chalk from 'chalk';
 
 const ChildProcess = spawn('true').constructor;
 
-function childProcessData(childProcess, options) {
-  options = Object.assign({
+function childProcessData (childProcess, opts) {
+  const options = Object.assign({
     format: 'utf-8',
     dataCallbacks: {
       '(Starting) \'(\\w+)\'\\.\\.\\.': (action, task) => {
@@ -22,7 +22,7 @@ function childProcessData(childProcess, options) {
       },
       '(Working directory changed to|Using gulpfile) (.+)': (action, path) => {
         console.log(`${action} ${chalk.magenta(path)}`);
-      }
+      },
     },
     dataLevel: 0,
     dataUp: () => {
@@ -33,22 +33,22 @@ function childProcessData(childProcess, options) {
       if (!options.dataLevel) {
         options.resolve();
       }
-    }
-  }, options);
+    },
+  }, opts);
 
-  var dataCallbacks = [];
+  let dataCallbacks = [];
   Object.keys(options.dataCallbacks).forEach(key => {
     dataCallbacks.push({
       pattern: key,
       regexp: new RegExp(key),
-      callback: options.dataCallbacks[key]
+      callback: options.dataCallbacks[key],
     });
   });
 
-  var p = childProcess;
-  var outMessages = [];
-  var errMessages = [];
-  var allMessages = [];
+  const p = childProcess;
+  const outMessages = [];
+  const errMessages = [];
+  const allMessages = [];
 
   if (!(p instanceof ChildProcess)) {
     throw new TypeError('Not a ChildProcess instance ' + p);
@@ -62,34 +62,33 @@ function childProcessData(childProcess, options) {
     throw new ReferenceError('Undefined child process stderr');
   }
 
-  var promise = new Promise((resolve, reject) => {
-
+  const promise = new Promise((resolve, reject) => {
     options.result = {
       childProcess, outMessages, errMessages, allMessages,
-      out() {
+      out () {
         return this.outMessages.join('');
       },
-      err() {
+      err () {
         return this.errMessages.join('');
       },
-      all() {
+      all () {
         return this.allMessages.join('');
-      }
+      },
     };
     options.resolve = () => {
       resolve(options.result);
     };
     options.reject = reject;
 
-    p.stdout.on('data', function(data) {
+    p.stdout.on('data', function (data) {
       const str = data.toString(options.format);
       outMessages.push(str);
       allMessages.push(str);
 
-      var found = false;
+      let found = false;
 
       dataCallbacks.some(obj => {
-        var res = str.match(obj.regexp);
+        const res = str.match(obj.regexp);
         if (res) {
           found = true;
           obj.callback(res[1], res[2], res[3], res[4]);
@@ -102,15 +101,15 @@ function childProcessData(childProcess, options) {
       }
     });
 
-    p.stderr.on('data', function(data) {
+    p.stderr.on('data', function (data) {
       const str = data.toString(options.format);
       errMessages.push(str);
       allMessages.push(str);
 
-      var found = false;
+      let found = false;
 
       dataCallbacks.some(obj => {
-        var res = str.match(obj.regexp);
+        const res = str.match(obj.regexp);
         if (res) {
           found = true;
           obj.callback(res[1], res[2], res[3], res[4]);
@@ -123,7 +122,7 @@ function childProcessData(childProcess, options) {
       }
     });
 
-    const callback = function(code) {
+    const callback = function (code) {
       if (!code) {
         resolve(options.result);
       } else {
@@ -140,7 +139,6 @@ ${allMessages.join('')}<<<<end dual buffer`);
     };
 
     p.on('close', callback);
-
   });
 
   return promise;
