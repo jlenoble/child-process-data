@@ -1,6 +1,6 @@
 import {spawn} from 'child_process';
 
-const ChildProcess = spawn('true').constructor;
+export const ChildProcess = spawn('true').constructor;
 
 export default function checkChildProcess (childProcess) {
   if (!(childProcess instanceof ChildProcess)) {
