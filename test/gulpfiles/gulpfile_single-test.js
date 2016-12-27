@@ -9,7 +9,7 @@ const hello = function(done) {
 };
 
 gulp.task('subtest', function(done) {
-  gulp.watch('gulpfile_gutil.js', hello);
+  gulp.watch('gulpfile_single-test.js', hello);
   hello(done);
 });
 

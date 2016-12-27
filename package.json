@@ -40,6 +40,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
+    "node-fs-extra": "^0.8.1",
     "plumb-gulp": "^0.1.0"
   },
   "dependencies": {}
