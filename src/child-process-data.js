@@ -58,7 +58,7 @@ export function makeSingleTest (options) {
     },
     onSuccess () {
       return Promise.resolve();
-    }
+    },
   }, options);
 
   return (function (options) {
@@ -71,5 +71,5 @@ export function makeSingleTest (options) {
           options.onCheckResultsError(err))
         .then(() => options.onSuccess(), err => options.onTearDownError(err));
     };
-  }(opts))
+  }(opts));
 }
