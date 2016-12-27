@@ -2,7 +2,7 @@
   "name": "child-process-data",
   "version": "0.2.0",
   "description": "A helper to handle data output from child processes",
-  "main": "index.js",
+  "main": "lib/child-process-data.js",
   "scripts": {
     "test": "gulp test"
   },
