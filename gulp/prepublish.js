@@ -4,4 +4,4 @@ import './test';
 import './clean';
 import './dist';
 
-gulp.task('prepublish', gulp.series('test', 'clean', 'dist'));
+gulp.task('prepublish', gulp.series('test', 'distclean', 'dist'));
