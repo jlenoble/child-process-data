@@ -8,6 +8,9 @@
     "license": "MIT",
     "Class": "ChildProcessData",
     "transpile": "es2015",
-    "addons": []
+    "addons": [],
+    "updated": 2017,
+    "created": 2016,
+    "year": "2016-2017"
   }
 }

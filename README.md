@@ -99,4 +99,4 @@ childProcessData(spawn('node', ['./test/examples/error-exit.js'])).catch(err => 
 
 child-process-data is [MIT licensed](./LICENSE).
 
-© [Jason Lenoble](mailto:jason.lenoble@gmail.com)
+© 2016-2017 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
