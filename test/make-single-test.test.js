@@ -75,4 +75,41 @@ describe(`Testing makeSingleTest factory`, function () {
     });
     return test();
   });
+
+  it(`Testing gulp subprocess with debug option`, function () {
+    this.timeout(5000); // eslint-disable-line no-invalid-this
+
+    const file = 'gulpfile_single-test.js';
+    const toFile = path.join('build', '_' + file);
+    const fromFile = path.join('test/gulpfiles', file);
+
+    const test = makeSingleTest({
+      debug: true,
+      childProcess: ['gulp', ['--gulpfile', toFile]],
+      setupTest () {
+        return new Promise((resolve, reject) => {
+          fse.copy(fromFile, toFile, function (err) {
+            if (err) {
+              return reject(err);
+            }
+            resolve();
+          });
+        });
+      },
+      checkResults (results) {
+        const all = results.all();
+        expect(all).to.match(/Working directory changed to.*child-process-data/);
+        expect(all).to.match(/Using gulpfile.*child-process-data.*single-test/);
+        expect(all).to.match(/Starting 'subtest'/);
+        expect(all).to.match(/Test message \d: Hello!/);
+        expect(all).to.match(/Finished 'subtest'/);
+        return results;
+      },
+      tearDownTest (results) {
+        results.childProcess.kill();
+        return del(toFile);
+      },
+    });
+    return test();
+  });
 });

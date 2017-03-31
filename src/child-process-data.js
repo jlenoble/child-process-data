@@ -61,6 +61,20 @@ export function makeSingleTest (options) {
     },
   }, options);
 
+  if (opts.debug) {
+    opts.debug = {};
+    Object.keys(opts).forEach(key => {
+      opts.debug[key] = opts[key];
+
+      if (typeof opts[key] === 'function') {
+        opts[key] = function (...args) {
+          console.log('[makeSingleTest]', key);
+          return this.debug[key](...args);
+        };
+      }
+    });
+  }
+
   return (function (options) {
     return function () {
       return options.setupTest()
