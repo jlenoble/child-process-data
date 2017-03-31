@@ -14,6 +14,11 @@ export default function extendOptions (options, childProcess, resolve, reject) {
     all () {
       return this.allMessages.join('');
     },
+    forget () {
+      this.outMessages.length = 0;
+      this.errMessages.length = 0;
+      this.allMessages.length = 0;
+    },
   };
   options.resolve = () => { // eslint-disable-line no-param-reassign
     resolve(options.result);
