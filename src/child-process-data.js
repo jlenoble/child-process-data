@@ -64,12 +64,11 @@ export function makeSingleTest (options) {
   if (opts.debug) {
     opts.debug = {};
     Object.keys(opts).forEach(key => {
-      opts.debug[key] = opts[key];
-
       if (typeof opts[key] === 'function') {
+        opts.debug[key] = opts[key];
         opts[key] = function (...args) {
           console.log('[makeSingleTest]', key);
-          return this.debug[key](...args);
+          return this.debug[key].call(this, ...args);
         };
       }
     });
