@@ -2,8 +2,7 @@ import childProcessData from '../src/child-process-data';
 import {spawn} from 'child_process';
 import {expect} from 'chai';
 
-describe('Testing childProcessData', function() {
-
+describe('Testing childProcessData', function () {
   const echo = (...args) => {
     return childProcessData(spawn('echo', args));
   };
@@ -12,23 +11,23 @@ describe('Testing childProcessData', function() {
     return childProcessData(spawn('gulp', [
       '--gulpfile',
       `build/${gulpfile}`,
-      'subtest'
+      'subtest',
     ]));
   };
 
-  it(`childProcessData can capture one-time outputs`, function() {
+  it(`childProcessData can capture one-time outputs`, function () {
     return Promise.all([
       echo('Little silly message').then(res => {
         expect(res.all()).to.equal('Little silly message\n');
       }),
       echo('Another little silly message').then(res => {
         expect(res.all()).to.equal('Another little silly message\n');
-      })
+      }),
     ]);
   });
 
-  it(`childProcessData can capture continuous outputs`, function() {
-    this.timeout(3000);
+  it(`childProcessData can capture continuous outputs`, function () {
+    this.timeout(3000); // eslint-disable-line no-invalid-this
 
     return gulpTest('gulpfile_gutil.log.js').then(res => {
       const all = res.all();
@@ -41,11 +40,11 @@ describe('Testing childProcessData', function() {
     });
   });
 
-  it(`childProcessData can capture uncaught errors`, function() {
-    this.timeout(3000);
+  it(`childProcessData can capture uncaught errors`, function () {
+    this.timeout(3000); // eslint-disable-line no-invalid-this
 
-    return gulpTest('gulpfile_gulp-error.js').catch(err => {
-      err = err.message;
+    return gulpTest('gulpfile_gulp-error.js').catch(_err => {
+      const err = _err.message;
       console.log(err);
       expect(err).to.match(/child process stream closed with code 1/);
       expect(err).to.match(/Working directory changed to.*child-process-data/);
@@ -56,11 +55,11 @@ describe('Testing childProcessData', function() {
     });
   });
 
-  it(`childProcessData can capture caught errors`, function() {
-    this.timeout(3000);
+  it(`childProcessData can capture caught errors`, function () {
+    this.timeout(3000); // eslint-disable-line no-invalid-this
 
-    return gulpTest('gulpfile_gulp-error_plumber.js').then(res => {
-      res = res.all();
+    return gulpTest('gulpfile_gulp-error_plumber.js').then(_res => {
+      const res = _res.all();
       expect(res).to.match(/Working directory changed to.*child-process-data/);
       expect(res).to.match(/Using gulpfile.*child-process-data.*plumber/);
       expect(res).to.match(/Starting 'subtest'/);
@@ -71,5 +70,4 @@ describe('Testing childProcessData', function() {
       expect(res).to.match(/Did you forget to signal async completion?/);
     });
   });
-
 });

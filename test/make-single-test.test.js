@@ -5,7 +5,6 @@ import fse from 'node-fs-extra';
 import {expect} from 'chai';
 
 describe(`Testing makeSingleTest factory`, function () {
-
   it(`Default makeSingleTest() throws a 'Not a ChildProcess instance' error`,
   function () {
     const test = makeSingleTest();
@@ -16,9 +15,10 @@ describe(`Testing makeSingleTest factory`, function () {
 
   it(`makeSingleTest({
         childProcess: ['echo', ['Hello', 'World!']]
-      }) throws a 'checkResults callback must be overridden' error`, function () {
+      }) throws a 'checkResults callback must be overridden' error`,
+  function () {
     const test = makeSingleTest({
-      childProcess: ['echo', ['Hello', 'World!']]
+      childProcess: ['echo', ['Hello', 'World!']],
     });
     return test().catch(err => {
       expect(err).to.match(/checkResults callback must be overridden/);
@@ -33,23 +33,25 @@ describe(`Testing makeSingleTest factory`, function () {
       }) is Ok`, function () {
     const test = makeSingleTest({
       childProcess: ['echo', ['Hello', 'World!']],
-      checkResults(results) {
+      checkResults (results) {
         expect(results.out()).to.equal('Hello World!\n');
-      }
+      },
     });
     return test();
   });
 
   it(`Testing gulp subprocess`, function () {
+    this.timeout(5000); // eslint-disable-line no-invalid-this
+
     const file = 'gulpfile_single-test.js';
     const toFile = path.join('build', file);
     const fromFile = path.join('test/gulpfiles', file);
 
     const test = makeSingleTest({
       childProcess: ['gulp', ['--gulpfile', toFile]],
-      setupTest() {
+      setupTest () {
         return new Promise((resolve, reject) => {
-          fse.copy(fromFile, toFile, function(err) {
+          fse.copy(fromFile, toFile, function (err) {
             if (err) {
               return reject(err);
             }
@@ -57,7 +59,7 @@ describe(`Testing makeSingleTest factory`, function () {
           });
         });
       },
-      checkResults(results) {
+      checkResults (results) {
         const all = results.all();
         expect(all).to.match(/Working directory changed to.*child-process-data/);
         expect(all).to.match(/Using gulpfile.*child-process-data.*single-test/);
@@ -66,12 +68,11 @@ describe(`Testing makeSingleTest factory`, function () {
         expect(all).to.match(/Finished 'subtest'/);
         return results;
       },
-      tearDownTest(results) {
+      tearDownTest (results) {
         results.childProcess.kill();
         return del(toFile);
-      }
+      },
     });
     return test();
   });
-
 });

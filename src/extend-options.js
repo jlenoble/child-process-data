@@ -3,7 +3,7 @@ export default function extendOptions (options, childProcess, resolve, reject) {
   const errMessages = [];
   const allMessages = [];
 
-  options.result = {
+  options.result = { // eslint-disable-line no-param-reassign
     childProcess, outMessages, errMessages, allMessages,
     out () {
       return this.outMessages.join('');
@@ -15,10 +15,10 @@ export default function extendOptions (options, childProcess, resolve, reject) {
       return this.allMessages.join('');
     },
   };
-  options.resolve = () => {
+  options.resolve = () => { // eslint-disable-line no-param-reassign
     resolve(options.result);
   };
-  options.reject = reject;
+  options.reject = reject; // eslint-disable-line no-param-reassign
 
   return options;
 }
