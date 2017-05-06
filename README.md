@@ -68,9 +68,7 @@ childProcessData(spawn('node', ['./test/examples/normal-exit.js'])).then(res => 
 
 ## Accessing uncaught error messages
 
-If the child process exits with a non-zero error code, then you recover the output messages using the ```catch``` channel of the promise returned by ```childProcessData```.
-
-The error message printed on screen contains the whole output of the child process, but you can also access all messages through the ```result``` property of the returned error object (it is the object that would have been returned via the ```then``` channel of the promise, had it not failed).
+If the child process exits with a non-zero error code, then you recover the output messages using the ```catch``` channel of the promise returned by ```childProcessData```. You can access all messages through the ```result``` property of the returned error object (it is the object that would have been returned via the ```then``` channel of the promise, had it not failed).
 
 Using file [error-exit.js](./test/examples/error-exit.js):
 
