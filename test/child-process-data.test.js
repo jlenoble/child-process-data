@@ -45,13 +45,14 @@ describe('Testing childProcessData', function () {
 
     return gulpTest('gulpfile_gulp-error.js').catch(_err => {
       const err = _err.message;
+      const all = _err.result.all();
       console.log(err);
       expect(err).to.match(/child process stream closed with code 1/);
-      expect(err).to.match(/Working directory changed to.*child-process-data/);
-      expect(err).to.match(/Using gulpfile.*child-process-data.*gulp-error/);
-      expect(err).to.match(/Starting 'subtest'/);
-      expect(err).to.match(/Error in plugin 'gulp-error'/);
-      expect(err).to.match(/Intentional error when processing.*child-process-data/);
+      expect(all).to.match(/Working directory changed to.*child-process-data/);
+      expect(all).to.match(/Using gulpfile.*child-process-data.*gulp-error/);
+      expect(all).to.match(/Starting 'subtest'/);
+      expect(all).to.match(/Error in plugin 'gulp-error'/);
+      expect(all).to.match(/Intentional error when processing.*child-process-data/);
     });
   });
 
