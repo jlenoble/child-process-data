@@ -1,4 +1,4 @@
-import {makeSingleTest} from '../src/child-process-data';
+import {makeSingleTest} from '../src/index';
 import path from 'path';
 import del from 'del';
 import fse from 'node-fs-extra';

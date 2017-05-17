@@ -1,4 +1,4 @@
-import childProcessData from '../src/child-process-data';
+import childProcessData from '../src/index';
 import {spawn} from 'child_process';
 import {expect} from 'chai';
 
