@@ -1,5 +1,15 @@
-process.stdout.write('lorem\n');
-process.stdout.write('ipsum\n');
-process.stderr.write('dolor\n');
-process.stdout.write('sit\n');
-throw new Error('amet\n');
+const out = (msg, n) => {
+  setTimeout(process.stdout.write.bind(process.stdout), n, msg);
+};
+const err = (msg, n) => {
+  setTimeout(process.stderr.write.bind(process.stderr), n, msg);
+};
+
+out('lorem\n', 10);
+out('ipsum\n', 20);
+err('dolor\n', 30);
+out('sit\n', 40);
+
+setTimeout(() => {
+  throw new Error('amet\n');
+}, 50);
