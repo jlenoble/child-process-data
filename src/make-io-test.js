@@ -54,6 +54,21 @@ export function makeIOTest (options) {
       // be returned, would the childProcess close.
       this.results = childProcessData(p).results;
     },
+
+    tearDownTest () {
+      this.childProcess.stdin.pause();
+      this.childProcess.kill();
+      return Promise.resolve();
+    },
+
+    onTearDownError (err) {
+      // Last attempt at cleaning up: all errors pass through this last method
+      if (this.childProcess) {
+        this.childProcess.stdin.pause();
+        this.childProcess.kill();
+      }
+      return Promise.reject(err);
+    },
   }, options);
 
   if (opts.childProcess) {
@@ -96,19 +111,17 @@ export function makeIOTest (options) {
       // Having a conversation
       .then(() => new Promise((resolve, reject) => {
         let i = 0;
-        const stdin = results.childProcess.stdin;
+        const stdin = this.childProcess.stdin;
 
-        const check = () => {
-          expect(results.outMessages).to.eql(outs);
-          expect(results.errMessages).to.eql(errs);
+        const check = scheme => {
+          if (scheme === 'io' || scheme === 'ie') {
+            expect(results.outMessages).to.eql(outs);
+            expect(results.errMessages).to.eql(errs);
+          }
         };
 
         const intervalId = setInterval(() => {
           try {
-            if (i > 0) {
-              check();
-            }
-
             if (i >= opts.messages.length) {
               clearInterval(intervalId);
               return resolve();
@@ -119,7 +132,26 @@ export function makeIOTest (options) {
             let inMsg;
             let outMsg;
 
+            if (i > 0) {
+              check(scheme);
+            }
+
             switch (scheme) {
+            case 'i':
+              inMsg = msg[scheme];
+              stdin.write(inMsg + '\r');
+              break;
+
+            case 'o':
+              outMsg = msg[scheme];
+              outs.push(outMsg);
+              break;
+
+            case 'e':
+              outMsg = msg[scheme];
+              errs.push(outMsg);
+              break;
+
             case 'io':
               [inMsg, outMsg] = msg[scheme];
               stdin.write(inMsg + '\r');

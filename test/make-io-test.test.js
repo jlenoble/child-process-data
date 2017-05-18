@@ -59,6 +59,8 @@ describe(`Testing makeIOTest factory`, function () {
                   'Where do you live?\n On Github.\n');
                 expect(results.outMessages[3]).to.equal(
                   'What do you do?\n I dont\'t speak to strings!\n');
+
+                results.childProcess.stdin.write('exit');
                 resolve();
               } catch(err) {
                 reject(err);
@@ -85,6 +87,7 @@ describe(`Testing makeIOTest factory`, function () {
         {io: ['Where do you live?', 'Where do you live?\n On Github.\n']},
         {io: ['What do you do?',
           'What do you do?\n I dont\'t speak to strings!\n']},
+        {i: 'exit'},
       ],
     });
 
