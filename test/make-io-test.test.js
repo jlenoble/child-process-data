@@ -87,7 +87,6 @@ describe(`Testing makeIOTest factory`, function () {
         {io: ['Where do you live?', 'Where do you live?\n On Github.\n']},
         {io: ['What do you do?',
           'What do you do?\n I dont\'t speak to strings!\n']},
-        {i: 'exit'},
       ],
     });
 

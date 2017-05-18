@@ -7,7 +7,6 @@ export function makeIOTest (options) {
   const opts = Object.assign({
     childProcessFile: null,
     childProcessOptions: [],
-    ioStrings: [],
     waitForReady: 300,
     waitForAnswer: 50,
 
@@ -102,6 +101,12 @@ export function makeIOTest (options) {
     opts.checkResults = function (results) {
       const outs = [];
       const errs = [];
+      const stdin = this.childProcess.stdin;
+
+      const check = () => {
+        expect(results.outMessages.join('')).to.equal(outs.join(''));
+        expect(results.errMessages.join('')).to.equal(errs.join(''));
+      };
 
       return new Promise(resolve => {
         // Waiting for child to be online
@@ -111,14 +116,6 @@ export function makeIOTest (options) {
       // Having a conversation
       .then(() => new Promise((resolve, reject) => {
         let i = 0;
-        const stdin = this.childProcess.stdin;
-
-        const check = scheme => {
-          if (scheme === 'io' || scheme === 'ie') {
-            expect(results.outMessages).to.eql(outs);
-            expect(results.errMessages).to.eql(errs);
-          }
-        };
 
         const intervalId = setInterval(() => {
           try {
@@ -133,7 +130,7 @@ export function makeIOTest (options) {
             let outMsg;
 
             if (i > 0) {
-              check(scheme);
+              check();
             }
 
             switch (scheme) {
@@ -173,6 +170,18 @@ export function makeIOTest (options) {
           }
 
           i++;
+        }, this.waitForAnswer);
+      }))
+
+      // Test last return
+      .then(() => new Promise((resolve, reject) => {
+        setTimeout(() => {
+          try {
+            check();
+            return resolve();
+          } catch (err) {
+            return reject(err);
+          }
         }, this.waitForAnswer);
       }));
     };
