@@ -44,7 +44,5 @@
     "plumb-gulp": "^0.1.0",
     "yargs": "^8.0.1"
   },
-  "dependencies": {
-    "muter": "0.6.0"
-  }
+  "dependencies": {}
 }

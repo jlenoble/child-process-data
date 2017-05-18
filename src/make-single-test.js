@@ -1,4 +1,3 @@
-import Muter, {muted, captured} from 'muter';
 import {spawn} from 'child_process';
 import childProcessData from './child-process-data';
 
@@ -65,47 +64,10 @@ export function makeSingleTest (options) {
   // Don't pass directly user check function
   const checkResults = opts.checkResults;
 
-  // Instead wrap it to possibly mute it and handle ongoing child process
-  opts.checkResults = (function (mute) {
-    return function (results) {
-      const muter = new Muter(process);
-
-      // When child doesn't return, capture logs using muter and mock
-      // results interface
-      const muterToRes = () => {
-        return {
-          muter,
-
-          out () {
-            return this.muter.getLogs({
-              logger: process.stdout,
-              method: 'write',
-            });
-          },
-
-          err () {
-            return this.muter.getLogs({
-              logger: process.stderr,
-              method: 'write',
-            });
-          },
-
-          all () {
-            return this.muter.getLogs();
-          },
-        };
-      };
-
-      // If results exists, then child has returned, use its results,
-      // else provide mockup based on Muter to deal with async messages
-      const doCheck = results => {
-        return checkResults.call(this, results || muterToRes());
-      };
-
-      // If child process has returned then muted/captured has no effect
-      return (mute ? muted : captured)(muter, doCheck)(results);
-    };
-  }(opts.mute));
+  // Instead wrap it to handle ongoing child process
+  opts.checkResults = function (results) {
+    return checkResults.call(this, results || this.results);
+  };
 
   // Generate single test function
   return (function (options) {

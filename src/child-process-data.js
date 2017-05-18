@@ -11,7 +11,7 @@ export default function childProcessData (childProcess, opts) {
   const options = makeOptions(opts);
   const dataCallbacks = makeDataCallbacks(options.dataCallbacks);
 
-  return new Promise((resolve, reject) => {
+  const p = new Promise((resolve, reject) => {
     extendOptions(options, childProcess, resolve, reject);
 
     const {format} = options;
@@ -25,4 +25,8 @@ export default function childProcessData (childProcess, opts) {
 
     childProcess.on('close', makeOnCloseCallback(options, resolve, reject));
   });
+
+  p.results = options.result;
+
+  return p;
 }
