@@ -71,4 +71,23 @@ describe(`Testing makeIOTest factory`, function () {
 
     return test();
   });
+
+  it(`makeIOTest({
+        childProcessFile: 'build/test/io/readline.js',
+        io: [...]
+      }) is Ok`, function () {
+    const test = makeIOTest({
+      childProcessFile: 'build/test/io/readline.js',
+
+      messages: [
+        {io: ['Hello!', 'Hello!\n Hello!\n']},
+        {io: ['How are you?', 'How are you?\n Fine!\n']},
+        {io: ['Where do you live?', 'Where do you live?\n On Github.\n']},
+        {io: ['What do you do?',
+          'What do you do?\n I dont\'t speak to strings!\n']},
+      ],
+    });
+
+    return test();
+  });
 });
