@@ -93,6 +93,55 @@ childProcessData(spawn('node', ['./test/examples/error-exit.js'])).catch(err => 
 });
 ```
 
+## Test helpers
+
+`childProcessData`'s primary intent was to help test `Gulp` processes by catching their outputs, especially while developing `Yeoman` generator [generator-wupjs](https://www.npmjs.com/package/generator-wupjs).
+
+As such, some tests are pretty recurring, and two helpers around `childProcessData` are provided to help build them fast: `makeSingleTest` and
+`makeIOTest`.
+
+### makeSingleTest
+
+```js
+import {makeSingleTest} from 'child-process-data';
+import {expect} from 'chai';
+
+describe('One test suite', function () {
+  it('One test', function () {
+    const test = makeSingleTest({
+      childProcess: ['echo', ['Hello world']],
+
+      checkResults (results) {
+        expect(results.out()).to.equal('Hello world\n');
+      },
+    });
+
+    return test();
+  });
+});
+```
+
+### makeIOTest
+
+```js
+import {makeIOTest} from 'child-process-data';
+
+describe('One test suite', function () {
+  it('One test', function () {
+    const test = makeSingleTest({
+      childProcessFile: 'build/src/do-this.js',
+
+      messages: [
+        {io: ['Did you do this?', 'Yes\n']},
+        {io: ['And that?', 'Not yet\n']},
+      ]
+    });
+
+    return test();
+  });
+});
+```
+
 ## License
 
 child-process-data is [MIT licensed](./LICENSE).
