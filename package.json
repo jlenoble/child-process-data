@@ -44,5 +44,7 @@
     "plumb-gulp": "^0.1.0",
     "yargs": "^8.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "deepkill": "^0.1.0"
+  }
 }

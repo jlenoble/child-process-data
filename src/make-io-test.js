@@ -2,6 +2,7 @@ import {spawn} from 'child_process';
 import {expect} from 'chai';
 import childProcessData from './child-process-data';
 import {makeSingleTest} from './make-single-test';
+import deepKill from 'deepkill';
 
 export function makeIOTest (options) {
   const opts = Object.assign({
@@ -56,7 +57,7 @@ export function makeIOTest (options) {
 
     tearDownTest () {
       this.childProcess.stdin.pause();
-      this.childProcess.kill();
+      deepKill(this.childProcess.pid);
       return Promise.resolve();
     },
 
@@ -64,7 +65,7 @@ export function makeIOTest (options) {
       // Last attempt at cleaning up: all errors pass through this last method
       if (this.childProcess) {
         this.childProcess.stdin.pause();
-        this.childProcess.kill();
+        deepKill(this.childProcess.pid);
       }
       return Promise.reject(err);
     },
