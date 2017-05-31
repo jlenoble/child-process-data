@@ -56,7 +56,9 @@ export function makeIOTest (options) {
     },
 
     tearDownTest () {
-      this.childProcess.stdin.pause();
+      if (this.childProcess.stdin) { // May not have been opened in parent
+        this.childProcess.stdin.pause();
+      }
       deepKill(this.childProcess.pid);
       return Promise.resolve();
     },
@@ -64,7 +66,9 @@ export function makeIOTest (options) {
     onTearDownError (err) {
       // Last attempt at cleaning up: all errors pass through this last method
       if (this.childProcess) {
-        this.childProcess.stdin.pause();
+        if (this.childProcess.stdin) { // May not have been opened in parent
+          this.childProcess.stdin.pause();
+        }
         deepKill(this.childProcess.pid);
       }
       return Promise.reject(err);
