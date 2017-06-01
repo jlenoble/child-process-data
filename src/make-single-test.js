@@ -1,5 +1,6 @@
 import {spawn} from 'child_process';
 import childProcessData from './child-process-data';
+import stripAnsi from 'strip-ansi';
 
 export function makeSingleTest (options) {
   // Single test steps are immutable, but they don't need to be overridden,
@@ -23,7 +24,18 @@ export function makeSingleTest (options) {
     },
 
     onSpawnError (err) {
-      return Promise.reject(err);
+      // At this level, must reprocess error, as it is often terse (child
+      // process returned with code 1), whereas err.result contains much
+      // more information
+      if (err.result) {
+        const [message, ...stack] = stripAnsi(err.result.err() + '\n' +
+          err.message + '\n' + err.stack).split('\n');
+        const e = new Error(message);
+        e.stack = stack.join('\n');
+        return Promise.reject(e);
+      } else {
+        return Promise.reject(err);
+      }
     },
 
     checkResults (results) {
