@@ -51,14 +51,26 @@ describe(`Testing makeIOTest factory`, function () {
           return new Promise((resolve, reject) => {
             setTimeout(() => {
               try {
-                expect(results.outMessages[0]).to.equal(
-                  'Hello!\n Hello!\n');
-                expect(results.outMessages[1]).to.equal(
-                  'How are you?\n Fine!\n');
-                expect(results.outMessages[2]).to.equal(
-                  'Where do you live?\n On Github.\n');
-                expect(results.outMessages[3]).to.equal(
-                  'What do you do?\n I dont\'t speak to strings!\n');
+                const out = results.out().split('\n').reduce((arr, str) => {
+                  const last = arr[arr.length - 1];
+
+                  if (last.length < 2) {
+                    last.push(str);
+                  } else {
+                    arr.push([str]);
+                  };
+
+                  return arr;
+                }, [[]]);
+
+                expect(out[0].join('\n')).to.equal(
+                  'Hello!\n Hello!');
+                expect(out[1].join('\n')).to.equal(
+                  'How are you?\n Fine!');
+                expect(out[2].join('\n')).to.equal(
+                  'Where do you live?\n On Github.');
+                expect(out[3].join('\n')).to.equal(
+                  'What do you do?\n I dont\'t speak to strings!');
 
                 results.childProcess.stdin.write('exit');
                 resolve();
