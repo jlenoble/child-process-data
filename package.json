@@ -1,6 +1,6 @@
 {
   "name": "child-process-data",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "A helper to handle data output from child processes",
   "main": "lib/index.js",
   "scripts": {
