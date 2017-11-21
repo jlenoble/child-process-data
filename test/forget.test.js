@@ -34,7 +34,7 @@ describe('Testing childProcessData', function () {
         res.forgetUpTo('dolor\n', {included: true});
         expect(res.out()).to.equal('sit\n');
         expect(res.err()).to.equal('amet\n');
-        expect(res.allMessages).to.have.length(2);
+        expect(res.all()).to.equal('sit\namet\n');
       }),
       node('./test/examples/error-exit.js').catch(err => {
         const res = err.result;
@@ -43,7 +43,7 @@ describe('Testing childProcessData', function () {
         res.forgetUpTo('dolor\n');
         expect(res.out()).to.equal('sit\n');
         expect(res.err()).to.equal('dolor\n' + res.errMessages[1]);
-        expect(res.allMessages).to.have.length(3);
+        expect(res.all()).to.equal('dolor\nsit\n' + res.errMessages[1]);
       }),
     ]);
   });

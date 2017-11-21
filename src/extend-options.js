@@ -28,16 +28,29 @@ export default function extendOptions (options, childProcess, resolve, reject) {
       const pattern = message instanceof RegExp ? message : new RegExp(message);
       const {included} = options;
       let aIdx = -1;
+      let remains;
 
       this.allMessages.some((msg, idx) => {
-        if (msg.match(pattern)) {
+        const match = msg.match(pattern);
+
+        if (match) {
           aIdx = idx;
 
-          if (included) {
+          if (msg.length !== pattern.source.length) {
+            remains = msg.substring(match.index +
+              (included ? pattern.source.length : 0));
             if (msg === this.outMessages[0]) {
-              this.outMessages.shift();
+              this.outMessages[0] = remains;
             } else {
-              this.errMessages.shift();
+              this.errMessages[0] = remains;
+            }
+          } else {
+            if (included) {
+              if (msg === this.outMessages[0]) {
+                this.outMessages.shift();
+              } else {
+                this.errMessages.shift();
+              }
             }
           }
 
@@ -58,7 +71,11 @@ export default function extendOptions (options, childProcess, resolve, reject) {
         throw new Error(`"${message}" not found in messages up till now`);
       }
 
-      this.allMessages.splice(0, included ? aIdx + 1 : aIdx);
+      this.allMessages.splice(0, (included && !remains) ? aIdx + 1: aIdx);
+
+      if (remains) {
+        this.allMessages[0] = remains;
+      }
     },
   };
 
