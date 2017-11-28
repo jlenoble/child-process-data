@@ -25,28 +25,29 @@
   },
   "homepage": "https://github.com/jlenoble/child-process-data#readme",
   "devDependencies": {
-    "autoreload-gulp": "^0.1.0",
+    "autoreload-gulp": "^0.3.0",
+    "babel-core": "^6.26.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-env": "^1.6.1",
-    "chai": "^3.5.0",
-    "del": "^2.2.1",
-    "eslint-config-google": "^0.7.1",
+    "chai": "^4.1.2",
+    "del": "^3.0.0",
+    "eslint-config-google": "^0.9.1",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
-    "gulp-babel": "^6.1.2",
+    "gulp-babel": "^7.0.0",
     "gulp-error": "^0.1.2",
-    "gulp-eslint": "^3.0.1",
+    "gulp-eslint": "^4.0.0",
     "gulp-jscs": "^4.0.0",
-    "gulp-mocha": "^2.2.0",
+    "gulp-mocha": "^4.3.1",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^1.6.0",
+    "gulp-sourcemaps": "^2.6.1",
     "node-fs-extra": "^0.8.1",
     "plumb-gulp": "^0.1.0",
-    "yargs": "^8.0.1"
+    "yargs": "^10.0.3"
   },
   "dependencies": {
     "deepkill": "^0.1.0",
-    "strip-ansi": "^3.0.1"
+    "strip-ansi": "^4.0.0"
   },
   "peerDependencies": {
     "chai": "*"
