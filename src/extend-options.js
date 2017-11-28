@@ -79,34 +79,25 @@ export default function extendOptions (options, childProcess, resolve, reject) {
     },
 
     test (fn) {
-      const f = fn && typeof fn[Symbol.iterator] === 'function' ? fn : [fn];
-      return this.multiTest(f);
+      return this.multiTest(Array.isArray(fn) ? fn : [fn]);
     },
 
     multiTest (fns) {
       return this.allMessages.every(msg => {
-        let ok = true;
-        for (let fn of fns) {
-          ok = fn(msg);
-          if (!ok) {
-            break;
-          }
-        }
-        return ok;
+        return fns.every(fn => fn(msg));
       });
     },
 
     testUpTo (fn, _msg) {
-      const f = fn && typeof fn[Symbol.iterator] === 'function' ? fn : [fn];
-      return this.multiTestUpTo(f, _msg);
+      return this.multiTestUpTo(Array.isArray(fn) ? fn : [fn], _msg);
     },
 
     multiTestUpTo (fns, _msg) {
       const pattern = new RegExp(_msg);
 
       let pat;
-      let ok = true;
       let idx = -1;
+      let ok = true;
 
       this.allMessages.every((msg, i) => {
         pat = msg.match(pattern);
@@ -114,12 +105,7 @@ export default function extendOptions (options, childProcess, resolve, reject) {
           idx = i;
           return false;
         }
-        for (let fn of fns) {
-          ok = fn(msg);
-          if (!ok) {
-            break;
-          }
-        }
+        ok = fns.every(fn => fn(msg));
         return ok;
       });
 
@@ -134,15 +120,8 @@ export default function extendOptions (options, childProcess, resolve, reject) {
       }
 
       // All tests succeeded until pattern was found: One last to go
-      ok = true;
       const m = this.allMessages[idx].substring(0, pat.index);
-      for (let fn of fns) {
-        ok = fn(m);
-        if (!ok) {
-          break;
-        }
-      }
-      return ok;
+      return fns.every(fn => fn(m));
     },
   };
 

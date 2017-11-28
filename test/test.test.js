@@ -43,8 +43,6 @@ describe('Testing childProcessData', function () {
         expect(res.all()).to.equal('Little silly message\n');
         expect(res.multiTest([...good()])).to.be.true;
         expect(res.multiTest([...bad()])).to.be.false;
-        expect(res.multiTest(good())).to.be.true;
-        expect(res.multiTest(bad())).to.be.false;
       }),
     ]);
   });
@@ -65,6 +63,28 @@ describe('Testing childProcessData', function () {
         expect(res.testUpTo(msg => {
           return !msg.includes('ip');
         }, 'sum')).to.be.false;
+      }),
+    ]);
+  });
+
+  it(`childProcessData can multi-test messages up to a point`, function () {
+    return Promise.all([
+      node('./test/examples/normal-exit.js').then(res => {
+        function make (str) {
+          return msg => !msg.includes(str);
+        }
+        function* good () {
+          const a = ['sit', 'dolor'].map(make);
+          yield* a;
+        }
+        function* bad () {
+          const a = ['sit', 'dolor', 'ipsum'].map(make);
+          yield* a;
+        }
+
+        expect(res.all()).to.equal('lorem\nipsum\ndolor\nsit\namet\n');
+        expect(res.testUpTo([...good()], 'dolor')).to.be.true;
+        expect(res.testUpTo([...bad()], 'dolor')).to.be.false;
       }),
     ]);
   });
