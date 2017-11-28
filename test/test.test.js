@@ -28,17 +28,23 @@ describe('Testing childProcessData', function () {
   it(`childProcessData can multi-test buffered messages`, function () {
     return Promise.all([
       echo('Little silly message').then(res => {
+        function make (str) {
+          return msg => msg.includes(str);
+        }
+        function* good () {
+          const a = ['Little', 'silly', 'message'].map(make);
+          yield* a;
+        }
+        function* bad () {
+          const a = ['Little', 'silly', 'email'].map(make);
+          yield* a;
+        }
+
         expect(res.all()).to.equal('Little silly message\n');
-        expect(res.multiTest([
-          msg => msg.includes('Little'),
-          msg => msg.includes('silly'),
-          msg => msg.includes('message'),
-        ])).to.be.true;
-        expect(res.multiTest([
-          msg => msg.includes('Little'),
-          msg => msg.includes('silly'),
-          msg => msg.includes('email'),
-        ])).to.be.false;
+        expect(res.multiTest([...good()])).to.be.true;
+        expect(res.multiTest([...bad()])).to.be.false;
+        expect(res.multiTest(good())).to.be.true;
+        expect(res.multiTest(bad())).to.be.false;
       }),
     ]);
   });
