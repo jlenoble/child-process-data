@@ -1,6 +1,6 @@
 {
   "presets": ["env"],
   "plugins": [
-    "add-module-exports"
+    "add-module-exports", "transform-runtime"
   ]
 }
