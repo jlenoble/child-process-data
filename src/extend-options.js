@@ -77,6 +77,73 @@ export default function extendOptions (options, childProcess, resolve, reject) {
         this.allMessages[0] = remains;
       }
     },
+
+    test (fn) {
+      const f = fn && typeof fn[Symbol.iterator] === 'function' ? fn : [fn];
+      return this.multiTest(f);
+    },
+
+    multiTest (fns) {
+      return this.allMessages.every(msg => {
+        let ok = true;
+        for (let fn of fns) {
+          ok = fn(msg);
+          if (!ok) {
+            break;
+          }
+        }
+        return ok;
+      });
+    },
+
+    testUpTo (fn, _msg) {
+      const f = fn && typeof fn[Symbol.iterator] === 'function' ? fn : [fn];
+      return this.multiTestUpTo(f, _msg);
+    },
+
+    multiTestUpTo (fns, _msg) {
+      const pattern = new RegExp(_msg);
+
+      let pat;
+      let ok = true;
+      let idx = -1;
+
+      this.allMessages.every((msg, i) => {
+        pat = msg.match(pattern);
+        if (pat) {
+          idx = i;
+          return false;
+        }
+        for (let fn of fns) {
+          ok = fn(msg);
+          if (!ok) {
+            break;
+          }
+        }
+        return ok;
+      });
+
+      // A test failed
+      if (!ok) {
+        return false;
+      }
+
+      // All tests succeeded and pattern was never found
+      if (!pat) {
+        return true;
+      }
+
+      // All tests succeeded until pattern was found: One last to go
+      ok = true;
+      const m = this.allMessages[idx].substring(0, pat.index);
+      for (let fn of fns) {
+        ok = fn(m);
+        if (!ok) {
+          break;
+        }
+      }
+      return ok;
+    },
   };
 
   options.resolve = () => { // eslint-disable-line no-param-reassign
