@@ -18,8 +18,8 @@ describe('Testing README.md examples', function () {
   });
 
   it(`Testing 'Accessing individual messages' example`, function () {
-    return childProcessData(spawn('node',
-    ['./test/examples/normal-exit.js'])).then(res => {
+    return childProcessData(spawn('node', [
+      './test/examples/normal-exit.js'])).then(res => {
       expect(res.outMessages[0]).to.equal('lorem\n');
       expect(res.outMessages[1]).to.equal('ipsum\n');
       expect(res.outMessages[2]).to.equal('sit\n');
@@ -34,8 +34,8 @@ describe('Testing README.md examples', function () {
   });
 
   it(`Testing 'Accessing all messages' example`, function () {
-    return childProcessData(spawn('node',
-    ['./test/examples/normal-exit.js'])).then(res => {
+    return childProcessData(spawn('node', [
+      './test/examples/normal-exit.js'])).then(res => {
       expect(res.out()).to.equal('lorem\nipsum\nsit\n');
       expect(res.err()).to.equal('dolor\namet\n');
       ['lorem\n', 'ipsum\n', 'dolor\n', 'sit\n', 'amet\n'].forEach(word => {
@@ -45,8 +45,8 @@ describe('Testing README.md examples', function () {
   });
 
   it(`Testing 'Accessing uncaught error messages' example`, function () {
-    return childProcessData(spawn('node',
-    ['./test/examples/error-exit.js'])).catch(_err => {
+    return childProcessData(spawn('node', [
+      './test/examples/error-exit.js'])).catch(_err => {
       let res = _err.result;
 
       expect(res.outMessages[0]).to.equal('lorem\n');

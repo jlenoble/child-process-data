@@ -119,76 +119,76 @@ export function makeIOTest (options) {
       })
 
       // Having a conversation
-      .then(() => new Promise((resolve, reject) => {
-        let i = 0;
+        .then(() => new Promise((resolve, reject) => {
+          let i = 0;
 
-        const intervalId = setInterval(() => {
-          try {
-            if (i >= opts.messages.length) {
+          const intervalId = setInterval(() => {
+            try {
+              if (i >= opts.messages.length) {
+                clearInterval(intervalId);
+                return resolve();
+              }
+
+              const msg = opts.messages[i];
+              const [scheme] = Object.keys(msg);
+              let inMsg;
+              let outMsg;
+
+              if (i > 0) {
+                check();
+              }
+
+              switch (scheme) {
+              case 'i':
+                inMsg = msg[scheme];
+                stdin.write(inMsg + '\r');
+                break;
+
+              case 'o':
+                outMsg = msg[scheme];
+                outs.push(outMsg);
+                break;
+
+              case 'e':
+                outMsg = msg[scheme];
+                errs.push(outMsg);
+                break;
+
+              case 'io':
+                [inMsg, outMsg] = msg[scheme];
+                stdin.write(inMsg + '\r');
+                outs.push(outMsg);
+                break;
+
+              case 'ie':
+                [inMsg, outMsg] = msg[scheme];
+                stdin.write(inMsg + '\r');
+                errs.push(outMsg);
+                break;
+
+              default:
+                throw new Error('Unsupported IO scheme: ' + scheme);
+              }
+            } catch (err) {
               clearInterval(intervalId);
-              return resolve();
+              return reject(err);
             }
 
-            const msg = opts.messages[i];
-            const [scheme] = Object.keys(msg);
-            let inMsg;
-            let outMsg;
+            i++;
+          }, this.waitForAnswer);
+        }))
 
-            if (i > 0) {
+        // Test last return
+        .then(() => new Promise((resolve, reject) => {
+          setTimeout(() => {
+            try {
               check();
+              return resolve();
+            } catch (err) {
+              return reject(err);
             }
-
-            switch (scheme) {
-            case 'i':
-              inMsg = msg[scheme];
-              stdin.write(inMsg + '\r');
-              break;
-
-            case 'o':
-              outMsg = msg[scheme];
-              outs.push(outMsg);
-              break;
-
-            case 'e':
-              outMsg = msg[scheme];
-              errs.push(outMsg);
-              break;
-
-            case 'io':
-              [inMsg, outMsg] = msg[scheme];
-              stdin.write(inMsg + '\r');
-              outs.push(outMsg);
-              break;
-
-            case 'ie':
-              [inMsg, outMsg] = msg[scheme];
-              stdin.write(inMsg + '\r');
-              errs.push(outMsg);
-              break;
-
-            default:
-              throw new Error('Unsupported IO scheme: ' + scheme);
-            }
-          } catch (err) {
-            clearInterval(intervalId);
-            return reject(err);
-          }
-
-          i++;
-        }, this.waitForAnswer);
-      }))
-
-      // Test last return
-      .then(() => new Promise((resolve, reject) => {
-        setTimeout(() => {
-          try {
-            check();
-            return resolve();
-          } catch (err) {
-            return reject(err);
-          }
-        }, this.waitForAnswer);
-      }));
+          }, this.waitForAnswer);
+        }));
     };
   }
 

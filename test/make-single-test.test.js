@@ -6,24 +6,24 @@ import {expect} from 'chai';
 
 describe(`Testing makeSingleTest factory`, function () {
   it(`Default makeSingleTest() throws a 'Not a ChildProcess instance' error`,
-  function () {
-    const test = makeSingleTest();
-    return test().catch(err => {
-      expect(err).to.match(/Not a ChildProcess instance/);
+    function () {
+      const test = makeSingleTest();
+      return test().catch(err => {
+        expect(err).to.match(/Not a ChildProcess instance/);
+      });
     });
-  });
 
   it(`makeSingleTest({
         childProcess: ['echo', ['Hello', 'World!']]
       }) throws a 'checkResults callback must be overridden' error`,
-  function () {
-    const test = makeSingleTest({
-      childProcess: ['echo', ['Hello', 'World!']],
+    function () {
+      const test = makeSingleTest({
+        childProcess: ['echo', ['Hello', 'World!']],
+      });
+      return test().catch(err => {
+        expect(err).to.match(/checkResults callback must be overridden/);
+      });
     });
-    return test().catch(err => {
-      expect(err).to.match(/checkResults callback must be overridden/);
-    });
-  });
 
   it(`makeSingleTest({
         childProcess: ['echo', ['Hello', 'World!']],
@@ -31,14 +31,14 @@ describe(`Testing makeSingleTest factory`, function () {
           expect(results.out()).to.equal('Hello World!\\n');
         }
       }) is Ok`, function () {
-    const test = makeSingleTest({
-      childProcess: ['echo', ['Hello', 'World!']],
-      checkResults (results) {
-        expect(results.out()).to.equal('Hello World!\n');
-      },
+      const test = makeSingleTest({
+        childProcess: ['echo', ['Hello', 'World!']],
+        checkResults (results) {
+          expect(results.out()).to.equal('Hello World!\n');
+        },
+      });
+      return test();
     });
-    return test();
-  });
 
   it(`Testing gulp subprocess`, function () {
     this.timeout(5000); // eslint-disable-line no-invalid-this
