@@ -24,9 +24,8 @@ export default function extendOptions (options, childProcess, resolve, reject) {
       this.allMessages.length = 0;
     },
 
-    forgetUpTo (message, options = {}) {
+    forgetUpTo (message, {included = false} = {}) {
       const pattern = message instanceof RegExp ? message : new RegExp(message);
-      const {included} = options;
       let aIdx = -1;
       let remains;
 
@@ -88,11 +87,11 @@ export default function extendOptions (options, childProcess, resolve, reject) {
       });
     },
 
-    testUpTo (fn, _msg) {
-      return this.multiTestUpTo(Array.isArray(fn) ? fn : [fn], _msg);
+    testUpTo (fn, _msg, options) {
+      return this.multiTestUpTo(Array.isArray(fn) ? fn : [fn], _msg, options);
     },
 
-    multiTestUpTo (fns, _msg) {
+    multiTestUpTo (fns, _msg, {included = false} = {}) {
       const pattern = new RegExp(_msg);
 
       let pat;
@@ -120,7 +119,8 @@ export default function extendOptions (options, childProcess, resolve, reject) {
       }
 
       // All tests succeeded until pattern was found: One last to go
-      const m = this.allMessages[idx].substring(0, pat.index);
+      const m = this.allMessages[idx].substring(0, pat.index + (included ?
+        pat[0].length : 0));
       return fns.every(fn => fn(m));
     },
   };

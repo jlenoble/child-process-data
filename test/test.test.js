@@ -88,4 +88,29 @@ describe('Testing childProcessData', function () {
       }),
     ]);
   });
+
+  it(`childProcessData can multi-test messages up to a point, included`,
+    function () {
+      return Promise.all([
+        node('./test/examples/normal-exit.js').then(res => {
+          function make (str) {
+            return msg => !msg.includes(str);
+          }
+          function* good () {
+            const a = ['sit', 'amet'].map(make);
+            yield* a;
+          }
+          function* bad () {
+            const a = ['sit', 'dolor'].map(make);
+            yield* a;
+          }
+
+          expect(res.all()).to.equal('lorem\nipsum\ndolor\nsit\namet\n');
+          expect(res.testUpTo([...good()], 'dolor', {included: true}))
+            .to.be.true;
+          expect(res.testUpTo([...bad()], 'dolor', {included: true}))
+            .to.be.false;
+        }),
+      ]);
+    });
 });
