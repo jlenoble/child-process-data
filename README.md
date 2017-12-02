@@ -148,8 +148,8 @@ The `results` argument of the `checkResults` function you provide has helper ext
 
 * `test(msg => fn(msg))`: Returns `true` if passes for all messages.
 * `test(arrayOfFns)`: Returns `true` if passes for all function and all messages.
-* `testUpTo(msg => fn(msg), msg0)`: Returns `true` if passes for all messages up to `msg0` excluded.
-* `testUpTo(arrayOfFns, msg0)`: Returns `true` if passes for all functions and all messages up to `msg0` excluded.
+* `testUpTo(msg => fn(msg), msg0, {included})`: Returns `true` if passes for all messages up to `msg0`, `included` or not.
+* `testUpTo(arrayOfFns, msg0, {included})`: Returns `true` if passes for all functions and all messages up to `msg0`, `included` or not.
 * `forget()`: In long processes where `results` is continuously updated, forget all previous messages.
 * `forgetUpTo(msg0, {included})`: In long processes where `results` is continuously updated, forget all previous messages up to `msg0`, `included` or not.
 
