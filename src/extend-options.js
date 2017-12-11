@@ -25,7 +25,8 @@ export default function extendOptions (options, childProcess, resolve, reject) {
     },
 
     forgetUpTo (message, {included = false} = {}) {
-      const pattern = message instanceof RegExp ? message : new RegExp(message);
+      const pattern = message instanceof RegExp ? message : new RegExp(
+        message.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'));
       let aIdx = -1;
       let remains;
 
@@ -34,10 +35,10 @@ export default function extendOptions (options, childProcess, resolve, reject) {
 
         if (match) {
           aIdx = idx;
+          remains = msg.substring(match.index +
+            (included ? match[0].length : 0));
 
-          if (msg.length !== pattern.source.length) {
-            remains = msg.substring(match.index +
-              (included ? pattern.source.length : 0));
+          if (remains) {
             if (msg === this.outMessages[0]) {
               this.outMessages[0] = remains;
             } else {
@@ -92,7 +93,8 @@ export default function extendOptions (options, childProcess, resolve, reject) {
     },
 
     multiTestUpTo (fns, _msg, {included = false} = {}) {
-      const pattern = new RegExp(_msg);
+      const pattern = _msg instanceof RegExp ? _msg : new RegExp(
+        _msg.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'));
 
       let pat;
       let idx = -1;

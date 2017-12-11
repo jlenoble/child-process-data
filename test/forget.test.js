@@ -47,4 +47,93 @@ describe('Testing childProcessData', function () {
       }),
     ]);
   });
+
+  it(`childProcessData can forget messages up to a point - special chars`,
+    function () {
+      return Promise.all([
+        node('./test/examples/queue-bugfix.js').then(res => {
+          expect(res.out()).to.equal(`Starting 'default'...
+Starting 'exec:transpile'...
+Starting 'exec:copy'...
+Task 'copy' (SRC): src/gulptask.js
+Task 'copy' (SRC): 1 item
+Task 'copy' (NWR): src/gulptask.js
+Task 'copy' (NWR): 1 item
+Finished 'exec:copy' after
+Starting 'transpile'...
+Task 'transpile' (SRC): tmp/src/gulptask.js
+Task 'transpile' (SRC): 1 item
+Task 'transpile' (NWR): tmp/src/gulptask.js
+Task 'transpile' (DST): tmp/src/gulptask.js
+Task 'transpile' (NWR): 1 item
+Task 'transpile' (DST): 1 item
+Finished 'transpile' after
+Finished 'exec:transpile' after
+Finished 'default' after
+`);
+          res.forgetUpTo(`Starting 'exec:transpile'...`, {included: true});
+          expect(res.out()).to.equal(`
+Starting 'exec:copy'...
+Task 'copy' (SRC): src/gulptask.js
+Task 'copy' (SRC): 1 item
+Task 'copy' (NWR): src/gulptask.js
+Task 'copy' (NWR): 1 item
+Finished 'exec:copy' after
+Starting 'transpile'...
+Task 'transpile' (SRC): tmp/src/gulptask.js
+Task 'transpile' (SRC): 1 item
+Task 'transpile' (NWR): tmp/src/gulptask.js
+Task 'transpile' (DST): tmp/src/gulptask.js
+Task 'transpile' (NWR): 1 item
+Task 'transpile' (DST): 1 item
+Finished 'transpile' after
+Finished 'exec:transpile' after
+Finished 'default' after
+`);
+          res.forgetUpTo(`Starting 'exec:copy'...`, {included: true});
+          expect(res.out()).to.equal(`
+Task 'copy' (SRC): src/gulptask.js
+Task 'copy' (SRC): 1 item
+Task 'copy' (NWR): src/gulptask.js
+Task 'copy' (NWR): 1 item
+Finished 'exec:copy' after
+Starting 'transpile'...
+Task 'transpile' (SRC): tmp/src/gulptask.js
+Task 'transpile' (SRC): 1 item
+Task 'transpile' (NWR): tmp/src/gulptask.js
+Task 'transpile' (DST): tmp/src/gulptask.js
+Task 'transpile' (NWR): 1 item
+Task 'transpile' (DST): 1 item
+Finished 'transpile' after
+Finished 'exec:transpile' after
+Finished 'default' after
+`);
+          res.forgetUpTo(`Task 'copy' (SRC): src/gulptask.js`,
+            {included: true});
+          expect(res.out()).to.equal(`
+Task 'copy' (SRC): 1 item
+Task 'copy' (NWR): src/gulptask.js
+Task 'copy' (NWR): 1 item
+Finished 'exec:copy' after
+Starting 'transpile'...
+Task 'transpile' (SRC): tmp/src/gulptask.js
+Task 'transpile' (SRC): 1 item
+Task 'transpile' (NWR): tmp/src/gulptask.js
+Task 'transpile' (DST): tmp/src/gulptask.js
+Task 'transpile' (NWR): 1 item
+Task 'transpile' (DST): 1 item
+Finished 'transpile' after
+Finished 'exec:transpile' after
+Finished 'default' after
+`);
+          res.forgetUpTo(`Task 'transpile' (NWR): 1 item`, {included: true});
+          expect(res.out()).to.equal(`
+Task 'transpile' (DST): 1 item
+Finished 'transpile' after
+Finished 'exec:transpile' after
+Finished 'default' after
+`);
+        }),
+      ]);
+    });
 });

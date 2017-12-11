@@ -113,4 +113,64 @@ describe('Testing childProcessData', function () {
         }),
       ]);
     });
+
+  it(`multi-test messages up to a point, included - special chars`,
+    function () {
+      return Promise.all([
+        node('./test/examples/queue-bugfix.js').then(res => {
+          function make (str) {
+            return msg => !msg.includes(str);
+          }
+          function* good () {
+            const a = [
+              `Task 'transpile' (DST): tmp/src/gulptask.js`,
+              `Task 'transpile' (NWR): 1 item`,
+              `Task 'transpile' (DST): 1 item`,
+              `Finished 'transpile' after`,
+              `Finished 'exec:transpile' after`,
+              `Finished 'default' after`,
+            ].map(make);
+            yield* a;
+          }
+          function* bad () {
+            const a = [
+              `Task 'transpile' (DST): tmp/src/gulptask.js`,
+              `Task 'transpile' (NWR): 1 item`,
+              `Task 'transpile' (DST): 1 item`,
+              `Task 'transpile' (NWR): tmp/src/gulptask.js`,
+              `Finished 'transpile' after`,
+              `Finished 'exec:transpile' after`,
+              `Finished 'default' after`,
+            ].map(make);
+            yield* a;
+          }
+
+          expect(res.all()).to.equal(`Starting 'default'...
+Starting 'exec:transpile'...
+Starting 'exec:copy'...
+Task 'copy' (SRC): src/gulptask.js
+Task 'copy' (SRC): 1 item
+Task 'copy' (NWR): src/gulptask.js
+Task 'copy' (NWR): 1 item
+Finished 'exec:copy' after
+Starting 'transpile'...
+Task 'transpile' (SRC): tmp/src/gulptask.js
+Task 'transpile' (SRC): 1 item
+Task 'transpile' (NWR): tmp/src/gulptask.js
+Task 'transpile' (DST): tmp/src/gulptask.js
+Task 'transpile' (NWR): 1 item
+Task 'transpile' (DST): 1 item
+Finished 'transpile' after
+Finished 'exec:transpile' after
+Finished 'default' after
+`);
+          expect(res.testUpTo([...good()],
+            `Task 'transpile' (NWR): tmp/src/gulptask.js`, {included: true}))
+            .to.be.true;
+          expect(res.testUpTo([...bad()],
+            `Task 'transpile' (NWR): tmp/src/gulptask.js`, {included: true}))
+            .to.be.false;
+        }),
+      ]);
+    });
 });
