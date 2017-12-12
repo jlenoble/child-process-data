@@ -4,23 +4,34 @@ export default function makeOptions (opts) {
   const options = Object.assign({
     format: 'utf-8',
     dataCallbacks: {
-      '(Starting) \'(\\w+([:-_]\\w+)*)\'\\.\\.\\.': (match, action, task) => {
-        console.log(`${action} '${chalk.cyan(task)}'...`);
+      '(Starting) \'(\\w+([-:_]\\w+)*)\'\\.\\.\\.': (match, action, task) => {
         options.dataUp();
+        return {
+          coloredChunk: `${action} '${chalk.cyan(task)}'...`,
+          logger: [console, 'log'],
+        };
       },
-      '(Finished) \'(\\w+([:-_]\\w+)*)\' after (\\d+\\.?\\d* m?s)': (match,
+      '(Finished) \'(\\w+([-:_]\\w+)*)\' after (\\d+\\.?\\d* m?s)': (match,
         action, task, ...duration) => {
-        console.log(
-          `${action} '${chalk.cyan(task)}' after ${chalk.magenta(
-            duration[duration.length -1])}`);
         options.dataDown();
+        return {
+          coloredChunk: `${action} '${chalk.cyan(task)}' after ${chalk.magenta(
+            duration[duration.length -1])}`,
+          logger: [console, 'log'],
+        };
       },
       '\\[(\\d\\d:\\d\\d:\\d\\d)\\]': match => {
-        process.stdout.write(`${chalk.gray(match)} `);
+        return {
+          coloredChunk: `${chalk.gray(match)}`,
+          logger: [process.stdout, 'write'],
+        };
       },
       '(Working directory changed to|Using gulpfile) (.+)': (match,
         action, path) => {
-        console.log(`${action} ${chalk.magenta(path)}`);
+        return {
+          coloredChunk: `${action} ${chalk.magenta(path)}`,
+          logger: [console, 'log'],
+        };
       },
     },
     dataLevel: 0,

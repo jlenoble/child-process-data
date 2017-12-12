@@ -12,19 +12,46 @@ export default function makeOnDataCallback (
     messages.push(str);
     allMessages.push(str);
 
-    let found = false;
-
-    dataCallbacks.some(obj => {
-      const res = str.match(obj.regexp);
-      if (res) {
-        found = true;
-        obj.callback(...res);
+    function colorChunk (chunk) {
+      if (chunk === '\n') {
+        return;
       }
-      return found;
-    });
 
-    if (!found) {
-      process[std].write(chalk.yellow(str));
+      if (chunk[0] === '\n') {
+        return colorChunk(chunk.substring(1));
+      }
+
+      let found = false;
+      let result;
+
+      dataCallbacks.some(obj => {
+        const match = chunk.match(obj.regexp);
+        if (match) {
+          found = true;
+          result = Object.assign(obj.callback(...match), {match});
+        }
+        return found;
+      });
+
+      if (!found) {
+        process[std].write(chalk.yellow(chunk));
+        return;
+      }
+
+      const [logger, method] = result.logger;
+
+      if (result.match.index > 0) {
+        colorChunk(chunk.substring(0, result.match.index));
+      }
+
+      logger[method](result.coloredChunk);
+
+      const length = result.match[0].length + result.match.index;
+      if (chunk.length > length) {
+        colorChunk(chunk.substring(length));
+      }
     }
+
+    colorChunk(str);
   };
 }
