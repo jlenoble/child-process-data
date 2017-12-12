@@ -126,9 +126,9 @@ describe('Testing childProcessData', function () {
               `Task 'transpile' (DST): tmp/src/gulptask.js`,
               `Task 'transpile' (NWR): 1 item`,
               `Task 'transpile' (DST): 1 item`,
-              `Finished 'transpile' after`,
-              `Finished 'exec:transpile' after`,
-              `Finished 'default' after`,
+              `Finished 'transpile' after 150 ms`,
+              `Finished 'exec:transpile' after 150 ms`,
+              `Finished 'default' after 150 ms`,
             ].map(make);
             yield* a;
           }
@@ -138,9 +138,9 @@ describe('Testing childProcessData', function () {
               `Task 'transpile' (NWR): 1 item`,
               `Task 'transpile' (DST): 1 item`,
               `Task 'transpile' (NWR): tmp/src/gulptask.js`,
-              `Finished 'transpile' after`,
-              `Finished 'exec:transpile' after`,
-              `Finished 'default' after`,
+              `Finished 'transpile' after 150 ms`,
+              `Finished 'exec:transpile' after 150 ms`,
+              `Finished 'default' after 150 ms`,
             ].map(make);
             yield* a;
           }
@@ -152,7 +152,7 @@ Task 'copy' (SRC): src/gulptask.js
 Task 'copy' (SRC): 1 item
 Task 'copy' (NWR): src/gulptask.js
 Task 'copy' (NWR): 1 item
-Finished 'exec:copy' after
+Finished 'exec:copy' after 150 ms
 Starting 'transpile'...
 Task 'transpile' (SRC): tmp/src/gulptask.js
 Task 'transpile' (SRC): 1 item
@@ -160,9 +160,9 @@ Task 'transpile' (NWR): tmp/src/gulptask.js
 Task 'transpile' (DST): tmp/src/gulptask.js
 Task 'transpile' (NWR): 1 item
 Task 'transpile' (DST): 1 item
-Finished 'transpile' after
-Finished 'exec:transpile' after
-Finished 'default' after
+Finished 'transpile' after 150 ms
+Finished 'exec:transpile' after 150 ms
+Finished 'default' after 150 ms
 `);
           expect(res.testUpTo([...good()],
             `Task 'transpile' (NWR): tmp/src/gulptask.js`, {included: true}))
