@@ -18,7 +18,7 @@ export default function makeOnDataCallback (
       const res = str.match(obj.regexp);
       if (res) {
         found = true;
-        obj.callback(res[1], res[2], res[3], res[4]);
+        obj.callback(...res);
       }
       return found;
     });

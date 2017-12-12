@@ -4,20 +4,22 @@ export default function makeOptions (opts) {
   const options = Object.assign({
     format: 'utf-8',
     dataCallbacks: {
-      '(Starting) \'(\\w+)\'\\.\\.\\.': (action, task) => {
+      '(Starting) \'(\\w+([:-_]\\w+)*)\'\\.\\.\\.': (match, action, task) => {
         console.log(`${action} '${chalk.cyan(task)}'...`);
         options.dataUp();
       },
-      '(Finished) \'(\\w+)\' after (\\d+\\.?\\d* m?s)': (action, task,
-        duration) => {
+      '(Finished) \'(\\w+([:-_]\\w+)*)\' after (\\d+\\.?\\d* m?s)': (match,
+        action, task, ...duration) => {
         console.log(
-          `${action} '${chalk.cyan(task)}' after ${chalk.magenta(duration)}`);
+          `${action} '${chalk.cyan(task)}' after ${chalk.magenta(
+            duration[duration.length -1])}`);
         options.dataDown();
       },
-      '\\[(\\d\\d:\\d\\d:\\d\\d)\\]': time => {
-        process.stdout.write(`[${chalk.gray(time)}] `);
+      '\\[(\\d\\d:\\d\\d:\\d\\d)\\]': match => {
+        process.stdout.write(`${chalk.gray(match)} `);
       },
-      '(Working directory changed to|Using gulpfile) (.+)': (action, path) => {
+      '(Working directory changed to|Using gulpfile) (.+)': (match,
+        action, path) => {
         console.log(`${action} ${chalk.magenta(path)}`);
       },
     },

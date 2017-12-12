@@ -8,9 +8,11 @@ const hello = function (done) {
   done();
 };
 
-gulp.task('subtest', function (done) {
-  gulp.watch('gulpfile_gutil.log.js', hello);
+gulp.task('sub:te_st', function (done) {
+  gulp.watch('gulpfile_gutil.log-special.js', hello);
   hello(done);
 });
 
-gulp.task('default', gulp.parallel('subtest'));
+gulp.task('subtest', gulp.parallel('sub:te_st'));
+
+gulp.task('default', gulp.parallel('sub:te_st'));
