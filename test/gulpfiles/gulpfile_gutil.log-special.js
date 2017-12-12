@@ -8,11 +8,11 @@ const hello = function (done) {
   done();
 };
 
-gulp.task('sub:te_st', function (done) {
+gulp.task('sub:te_st-tdd:transpile:all', function (done) {
   gulp.watch('gulpfile_gutil.log-special.js', hello);
   hello(done);
 });
 
-gulp.task('subtest', gulp.parallel('sub:te_st'));
+gulp.task('subtest', gulp.parallel('sub:te_st-tdd:transpile:all'));
 
-gulp.task('default', gulp.parallel('sub:te_st'));
+gulp.task('default', gulp.parallel('sub:te_st-tdd:transpile:all'));

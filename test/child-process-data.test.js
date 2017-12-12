@@ -48,9 +48,10 @@ describe('Testing childProcessData', function () {
       expect(all).to.match(/Working directory changed to.*child-process-data/);
       expect(all).to.match(/Using gulpfile.*child-process-data.*gutil\.log/);
       expect(all).to.match(/Starting 'subtest'/);
-      expect(all).to.match(/Starting 'sub:te_st'/);
+      expect(all).to.match(/Starting 'sub:te_st-tdd:transpile:all'/);
       expect(all).to.match(/Test message \d: Hello!/);
-      expect(all).to.match(/Finished 'sub:te_st' after (\d+\.?\d*) m?s/);
+      expect(all).to.match(
+        /Finished 'sub:te_st-tdd:transpile:all' after (\d+\.?\d*) m?s/);
       expect(all).to.match(/Finished 'subtest' after (\d+\.?\d*) m?s/);
       res.childProcess.kill();
     });
