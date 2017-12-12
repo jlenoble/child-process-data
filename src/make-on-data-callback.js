@@ -1,16 +1,21 @@
 import chalk from 'chalk';
 
-export default function makeOnDataCallback (
+export default function makeOnDataCallback ({
   format,
   messages,
   allMessages,
   dataCallbacks,
-  std
-) {
+  std,
+  silent,
+}) {
   return function (data) {
     const str = data.toString(format);
     messages.push(str);
     allMessages.push(str);
+
+    if (silent) {
+      return;
+    }
 
     function colorChunk (chunk) {
       if (chunk === '\n') {

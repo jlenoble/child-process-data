@@ -8,20 +8,26 @@ import makeOnCloseCallback from './make-on-close-callback';
 export default function childProcessData (childProcess, opts) {
   checkChildProcess(childProcess);
 
-  const options = makeOptions(opts);
+  const options = makeOptions(opts, childProcessData);
   const dataCallbacks = makeDataCallbacks(options.dataCallbacks);
 
   const p = new Promise((resolve, reject) => {
     extendOptions(options, childProcess, resolve, reject);
 
-    const {format} = options;
+    const {format, silent} = options;
     const {outMessages, errMessages, allMessages} = options.result;
 
-    childProcess.stdout.on('data', makeOnDataCallback(format, outMessages,
-      allMessages, dataCallbacks, 'stdout'));
+    childProcess.stdout.on('data', makeOnDataCallback({
+      format, allMessages, dataCallbacks, silent,
+      messages: outMessages,
+      std: 'stdout',
+    }));
 
-    childProcess.stderr.on('data', makeOnDataCallback(format, errMessages,
-      allMessages, dataCallbacks, 'stderr'));
+    childProcess.stderr.on('data', makeOnDataCallback({
+      format, allMessages, dataCallbacks, silent,
+      messages: errMessages,
+      std: 'stderr',
+    }));
 
     childProcess.on('close', makeOnCloseCallback(options, resolve, reject));
   });
@@ -30,3 +36,16 @@ export default function childProcessData (childProcess, opts) {
 
   return p;
 }
+
+Object.defineProperty(childProcessData, 'silent', {
+  value: false,
+  writable: true,
+});
+
+childProcessData.mute = function () {
+  childProcessData.silent = true;
+};
+
+childProcessData.unmute = function () {
+  childProcessData.silent = false;
+};

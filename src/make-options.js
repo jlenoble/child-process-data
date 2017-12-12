@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-export default function makeOptions (opts) {
+export default function makeOptions (opts, childProcessData) {
   const options = Object.assign({
     format: 'utf-8',
     dataCallbacks: {
@@ -44,6 +44,7 @@ export default function makeOptions (opts) {
         options.resolve();
       }
     },
+    silent: childProcessData.silent,
   }, opts);
 
   return options;
