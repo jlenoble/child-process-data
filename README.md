@@ -21,6 +21,12 @@ childProcessData(proc2).then(res => { // Recovers output from proc2
 });
 ```
 
+## Options
+
+As a second argument, `childProcessData` can take a literal object with the following keys:
+
+* `silent`: if `true`, `childProcessData` will capture but not print the child process logging messages.
+
 ## Accessing individual messages
 
 To access the output of a child process that exited without errors, you use the ```then``` channel of the promise returned by ```childProcessData```.
