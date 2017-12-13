@@ -13,10 +13,6 @@ export default function makeOnDataCallback ({
     messages.push(str);
     allMessages.push(str);
 
-    if (silent) {
-      return;
-    }
-
     function colorChunk (chunk) {
       if (chunk === '\n') {
         return;
@@ -39,7 +35,9 @@ export default function makeOnDataCallback ({
       });
 
       if (!found) {
-        process[std].write(chalk.yellow(chunk));
+        if (!silent) {
+          process[std].write(chalk.yellow(chunk));
+        }
         return;
       }
 
@@ -49,7 +47,9 @@ export default function makeOnDataCallback ({
         colorChunk(chunk.substring(0, result.match.index));
       }
 
-      logger[method](result.coloredChunk);
+      if (!silent) {
+        logger[method](result.coloredChunk);
+      }
 
       const length = result.match[0].length + result.match.index;
       if (chunk.length > length) {
