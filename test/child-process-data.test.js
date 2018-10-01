@@ -81,11 +81,8 @@ describe('Testing childProcessData', function () {
       expect(res).to.match(/Working directory changed to.*child-process-data/);
       expect(res).to.match(/Using gulpfile.*child-process-data.*plumber/);
       expect(res).to.match(/Starting 'subtest'/);
-      expect(res).to.match(/Plumber found unhandled error:/);
-      expect(res).to.match(/Error in plugin 'gulp-error'/);
       expect(res).to.match(/Intentional error when processing.*child-process-data/);
-      expect(res).to.match(/The following tasks did not complete: subtest/);
-      expect(res).to.match(/Did you forget to signal async completion?/);
+      expect(res).to.match(/Finished 'subtest' after/);
     });
   });
 });
