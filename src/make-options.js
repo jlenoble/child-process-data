@@ -45,7 +45,16 @@ export default function makeOptions (opts, childProcessData) {
       }
     },
     silent: childProcessData.silent,
+    startDelay: false,
+    listenTime: 30000,
+    endDelay: false,
+    dontBlock: false,
   }, opts);
+
+  if (options.dontBlock) {
+    !options.startDelay && (options.startDelay = 1);
+    !options.endDelay && (options.endDelay = 1);
+  }
 
   return options;
 }

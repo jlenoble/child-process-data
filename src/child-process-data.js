@@ -30,6 +30,10 @@ export default function childProcessData (childProcess, opts) {
     }));
 
     childProcess.on('close', makeOnCloseCallback(options, resolve, reject));
+
+    if (options.startDelay > 0) {
+      setTimeout(options.resolve, options.startDelay);
+    }
   });
 
   p.results = options.result;
