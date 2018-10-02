@@ -41,6 +41,7 @@
     "gulp-plumber": "^1.2.0",
     "gulp-rename": "^1.4.0",
     "gulp-sourcemaps": "^2.6.4",
+    "muter": "^0.6.0",
     "node-fs-extra": "^0.8.1",
     "plumb-gulp": "^0.2.0",
     "yargs": "^12.0.2"
