@@ -16,14 +16,14 @@ describe(`Testing makeSingleTest factory`, function () {
   it(`makeSingleTest({
         childProcess: ['echo', ['Hello', 'World!']]
       }) throws a 'checkResults callback must be overridden' error`,
-    function () {
-      const test = makeSingleTest({
-        childProcess: ['echo', ['Hello', 'World!']],
-      });
-      return test().catch(err => {
-        expect(err).to.match(/checkResults callback must be overridden/);
-      });
+  function () {
+    const test = makeSingleTest({
+      childProcess: ['echo', ['Hello', 'World!']],
     });
+    return test().catch(err => {
+      expect(err).to.match(/checkResults callback must be overridden/);
+    });
+  });
 
   it(`makeSingleTest({
         childProcess: ['echo', ['Hello', 'World!']],
@@ -31,14 +31,14 @@ describe(`Testing makeSingleTest factory`, function () {
           expect(results.out()).to.equal('Hello World!\\n');
         }
       }) is Ok`, function () {
-      const test = makeSingleTest({
-        childProcess: ['echo', ['Hello', 'World!']],
-        checkResults (results) {
-          expect(results.out()).to.equal('Hello World!\n');
-        },
-      });
-      return test();
+    const test = makeSingleTest({
+      childProcess: ['echo', ['Hello', 'World!']],
+      checkResults (results) {
+        expect(results.out()).to.equal('Hello World!\n');
+      },
     });
+    return test();
+  });
 
   it(`Testing gulp subprocess`, function () {
     this.timeout(5000); // eslint-disable-line no-invalid-this
