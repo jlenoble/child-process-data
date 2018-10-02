@@ -29,9 +29,9 @@ As a second argument, `childProcessData` can take a literal object with the foll
 
 ## Accessing individual messages
 
-To access the output of a child process that exited without errors, you use the ```then``` channel of the promise returned by ```childProcessData```.
+To access the output of a child process that exited without errors, you use the `then` channel of the promise returned by `childProcessData`.
 
-Messages output on stdout are contained in array property ```outMessages```. Those on stderr are contained in array property ```errMessages```. They all are contained in order in array property ```allMessages```.
+Messages output on stdout are contained in array property `outMessages`. Those on stderr are contained in array property `errMessages`. They all are contained in order in array property `allMessages`.
 
 Using file [normal-exit.js](./test/examples/normal-exit.js):
 
@@ -62,7 +62,7 @@ childProcessData(spawn('node', ['./test/examples/normal-exit.js'])).then(res => 
 
 ## Accessing all messages
 
-As a conveniency, you can recover messages of a child process that exited without errors as a whole. Methods ```out```, ```err``` and ```all``` return a concatenation respectively of array properties ```outMessages```, ```errMessages``` and ```allMessages```.
+As a conveniency, you can recover messages of a child process that exited without errors as a whole. Methods `out`, `err` and `all` return a concatenation respectively of array properties `outMessages`, `errMessages` and `allMessages`.
 
 ```js
 childProcessData(spawn('node', ['./test/examples/normal-exit.js'])).then(res => {
@@ -74,7 +74,7 @@ childProcessData(spawn('node', ['./test/examples/normal-exit.js'])).then(res => 
 
 ## Accessing uncaught error messages
 
-If the child process exits with a non-zero error code, then you recover the output messages using the ```catch``` channel of the promise returned by ```childProcessData```. You can access all messages through the ```result``` property of the returned error object (it is the object that would have been returned via the ```then``` channel of the promise, had it not failed).
+If the child process exits with a non-zero error code, then you recover the output messages using the `catch` channel of the promise returned by `childProcessData`. You can access all messages through the `result` property of the returned error object (it is the object that would have been returned via the `then` channel of the promise, had it not failed).
 
 Using file [error-exit.js](./test/examples/error-exit.js):
 
@@ -98,6 +98,18 @@ childProcessData(spawn('node', ['./test/examples/error-exit.js'])).catch(err => 
   res.all() === 'lorem\nipsum\ndolor\nsit\n' + res.allMessages[4]; // true
 });
 ```
+
+## Dealing with long lived processes
+
+`childProcessData` is tweaked for TDD with `Gulp`. It keeps track of *Starting* and *Finished* messages and resolves even if the process keeps running. Therefore even after resolving, it keeps buffering the `Gulp` TDD messages.
+
+But if you use `childProcessData` on another long running processes, to obtain the same behavior, you need to pass `{dontBlock: true}` option or a `{startDelay: numberInMs}` option. Then, after 1 ms or `startDelay` ms, logs will be accessible.
+
+### `interceptMessage` and `resolveMessage` helpers
+
+`interceptMessage(proc, message, options)` helps capture messages. It returns a promise that resolves right away or after `{startDelay}`. Thereafter `resolveMessage(message)` returns a function returning a promise that resolves on seeing `message` either on stdout or stderr.
+
+A possible usage is when defining gulp tasks that launch servers. You can take advantage of their logs to start tasks that rely on their being ready without the need of maintaining some sockets open.
 
 ## Test helpers
 
@@ -163,4 +175,4 @@ The `results` argument of the `checkResults` function you provide has helper ext
 
 child-process-data is [MIT licensed](./LICENSE).
 
-© 2016-2017 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
+© 2016-2018 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
