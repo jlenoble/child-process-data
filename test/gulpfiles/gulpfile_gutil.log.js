@@ -1,16 +1,16 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
+const gulp = require("gulp");
+const log = require("fancy-log");
 
-const hello = function (done) {
+const hello = function(done) {
   for (let i = 0; i < 5; i++) {
-    gutil.log(`Test message ${i}: Hello!`);
+    log(`Test message ${i}: Hello!`);
   }
   done();
 };
 
-gulp.task('subtest', function (done) {
-  gulp.watch('gulpfile_gutil.log.js', hello);
+gulp.task("subtest", done => {
+  gulp.watch("gulpfile_gutil.log.js", hello);
   hello(done);
 });
 
-gulp.task('default', gulp.parallel('subtest'));
+gulp.task("default", gulp.parallel("subtest"));
