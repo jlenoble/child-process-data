@@ -1,16 +1,31 @@
 {
   "generator-wupjs": {
-    "module": "child-process-data",
-    "description": "A helper to handle data output from child processes",
-    "author": "Jason Lenoble",
-    "email": "jason.lenoble@gmail.com",
-    "github": "jlenoble",
-    "license": "MIT",
-    "Class": "ChildProcessData",
-    "transpile": "es2015",
-    "addons": [],
-    "updated": 2017,
-    "created": 2016,
-    "year": "2016-2017"
+    "createdWith": "0.1.1",
+    "modifiedWith": "0.6.0-5",
+    "createdOn": "2016-08-14T12:59:18.244Z",
+    "modifiedOn": "2019-05-28T15:33:05.053Z",
+    "gulp": true,
+    "srcDir": "src",
+    "testDir": "test",
+    "buildDir": "build",
+    "docDir": "docs",
+    "libDir": "lib",
+    "gulpDir": "gulp",
+    "typescript": true,
+    "jsx": false,
+    "extensions": [
+      "ts"
+    ],
+    "jupyter": false,
+    "antlr4": false,
+    "server": true,
+    "client": false,
+    "devModuleTypes": [
+      "ES6"
+    ],
+    "prodModuleTypes": [
+      "CommonJS"
+    ],
+    "monorepo": false
   }
 }
