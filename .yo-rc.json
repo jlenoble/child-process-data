@@ -3,7 +3,7 @@
     "createdWith": "0.1.1",
     "modifiedWith": "0.6.0-5",
     "createdOn": "2016-08-14T12:59:18.244Z",
-    "modifiedOn": "2019-05-28T15:33:05.053Z",
+    "modifiedOn": "2019-05-28T15:39:58.509Z",
     "gulp": true,
     "srcDir": "src",
     "testDir": "test",
@@ -14,7 +14,8 @@
     "typescript": true,
     "jsx": false,
     "extensions": [
-      "ts"
+      "ts",
+      "js"
     ],
     "jupyter": false,
     "antlr4": false,
