@@ -1,5 +1,20 @@
 # child-process-data
-A helper to capture data streams from child processes
+
+A helper to handle data output from child processes
+
+  * [Simple usage](#simple-usage)
+  * [Options](#options)
+  * [Accessing individual messages](#accessing-individual-messages)
+  * [Accessing all messages](#accessing-all-messages)
+  * [Accessing uncaught error messages](#accessing-uncaught-error-messages)
+  * [Dealing with long lived processes](#dealing-with-long-lived-processes)
+    * [`interceptMessage` and `resolveMessage` helpers](#interceptmessage-and-resolvemessage-helpers)
+  * [Test helpers](#test-helpers)
+    * [makeSingleTest](#makesingletest)
+    * [makeIOTest](#makeiotest)
+    * [Special extensions](#special-extensions)
+  * [License](#license)
+
 
 ## Simple usage
 
@@ -171,8 +186,10 @@ The `results` argument of the `checkResults` function you provide has helper ext
 * `forget()`: In long processes where `results` is continuously updated, forget all previous messages.
 * `forgetUpTo(msg0, {included})`: In long processes where `results` is continuously updated, forget all previous messages up to `msg0`, `included` or not.
 
+
 ## License
 
 child-process-data is [MIT licensed](./LICENSE).
 
-© 2016-2018 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
+© 2016-2019 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
+
