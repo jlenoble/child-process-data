@@ -37,7 +37,7 @@ describe("Testing childProcessData", (): void => {
     this.timeout(3000); // eslint-disable-line no-invalid-this
 
     return gulpTest("gulpfile_gutil.log.js").then(
-      (res): void => {
+      (res): Promise<void> => {
         const all = res.all();
         expect(all).to.match(
           /Working directory changed to.*child-process-data/
