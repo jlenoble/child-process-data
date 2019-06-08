@@ -1,38 +1,41 @@
-import chalk from 'chalk';
+import chalk from "chalk";
+import { DataCallbackOptions } from "./options";
 
-export default function makeOnDataCallback ({
+export default function makeOnDataCallback({
   format,
   messages,
   allMessages,
   dataCallbacks,
   std,
-  silent,
-}) {
-  return function (data) {
+  silent
+}: DataCallbackOptions): (data: string) => void {
+  return function(data): void {
     const str = data.toString(format);
     messages.push(str);
     allMessages.push(str);
 
-    function colorChunk (chunk) {
-      if (chunk === '\n') {
+    function colorChunk(chunk): void {
+      if (chunk === "\n") {
         return;
       }
 
-      if (chunk[0] === '\n') {
+      if (chunk[0] === "\n") {
         return colorChunk(chunk.substring(1));
       }
 
       let found = false;
       let result;
 
-      dataCallbacks.some(obj => {
-        const match = chunk.match(obj.regexp);
-        if (match) {
-          found = true;
-          result = Object.assign(obj.callback(...match), {match});
+      dataCallbacks.some(
+        (obj): boolean => {
+          const match = chunk.match(obj.regexp);
+          if (match) {
+            found = true;
+            result = Object.assign(obj.callback(...match), { match });
+          }
+          return found;
         }
-        return found;
-      });
+      );
 
       if (!found) {
         if (!silent) {

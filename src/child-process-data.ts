@@ -4,15 +4,17 @@ import makeDataCallbacks from "./make-data-callbacks";
 import extendOptions from "./extend-options";
 import makeOnDataCallback from "./make-on-data-callback";
 import makeOnCloseCallback from "./make-on-close-callback";
+import { ChildProcessWithReadableStdStreams } from "./child-process";
+import { Result } from "./options";
 
 export interface Options {
   silent?: boolean;
 }
 
 export default function childProcessData(
-  childProcess,
+  childProcess: ChildProcessWithReadableStdStreams,
   opts: Options = {}
-): Promise<void> {
+): Promise<Result> {
   checkChildProcess(childProcess);
 
   const options = makeOptions(opts, childProcessData);
