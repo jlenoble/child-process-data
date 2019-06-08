@@ -12,7 +12,8 @@ export default function makeOptions(
       startDelay: -1,
       listenTime: 30000,
       endDelay: -1,
-      dontBlock: false
+      dontBlock: false,
+      dataCallbacks: {}
     },
     opts
   );
