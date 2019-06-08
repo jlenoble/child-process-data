@@ -1,17 +1,23 @@
+import { DataCallbacks, ColoringCallback } from "./data-callbacks/handler";
+
 export interface Options {
+  format?: string;
   silent?: boolean;
   startDelay?: number;
   listenTime?: number;
   endDelay?: number;
   dontBlock?: boolean;
+  dataCallbacks?: DataCallbacks;
 }
 
 export interface NormalizedOptions extends Options {
+  format: string;
   silent: boolean;
   startDelay: number;
   listenTime: number;
   endDelay: number;
   dontBlock: boolean;
+  dataCallbacks: DataCallbacks;
 }
 
 export interface ColoringOptions {
@@ -19,10 +25,8 @@ export interface ColoringOptions {
   logger: [object, string];
 }
 
-export interface TimerOptions {
-  timeout?: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onResolve?: (arg?: any) => void;
-  onReject?: (err?: Error) => void;
-  throwOnTimeout?: boolean;
+export interface CallbackOptions {
+  pattern: string;
+  regexp: RegExp;
+  callback: ColoringCallback;
 }
