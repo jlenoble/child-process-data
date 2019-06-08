@@ -7,7 +7,7 @@ class LevelMismatchError extends Error {
   }
 }
 
-export class LevelingHandler extends Handler {
+export default class LevelingHandler extends Handler {
   public constructor(
     protoDataCallbacks: ProtoDataCallbacks,
     options?: Options

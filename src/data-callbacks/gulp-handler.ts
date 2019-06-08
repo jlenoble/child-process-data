@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { Options, ColoringOptions } from "../options";
-import { LevelingHandler } from "./leveling-handler";
+import LevelingHandler from "./leveling-handler";
 import { ColoringCallback, ProtoDataCallbacks } from "./handler";
 
 const protoDataCallbacks: ProtoDataCallbacks = {
