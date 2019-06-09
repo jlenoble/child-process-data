@@ -31,7 +31,7 @@ export default function makeOnDataCallback({
           const match = chunk.match(obj.regexp);
           if (match) {
             found = true;
-            result = Object.assign(obj.callback(...match), { match });
+            result = Object.assign(obj.callback(match), { match });
           }
           return found;
         }
