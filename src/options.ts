@@ -1,4 +1,4 @@
-import { DataCallbacks, ColoringCallback } from "./data-callbacks/handler";
+import { DataCallbacks, ColoringCallback } from "./patterns/handler";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
 
 export interface Options {

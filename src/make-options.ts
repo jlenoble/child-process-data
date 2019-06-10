@@ -1,5 +1,5 @@
 import { Options, NormalizedOptions } from "./options";
-import GulpHandler from "./data-callbacks/gulp-handler";
+import GulpHandler from "./patterns/gulp-handler";
 
 export default function makeOptions(
   opts: Options,
