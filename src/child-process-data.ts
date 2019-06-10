@@ -25,16 +25,16 @@ export default function childProcessData(
       extendOptions(options, childProcess, resolve, reject);
 
       const { format, silent } = options;
-      const { outMessages, errMessages, allMessages } = options.result;
+      const { _outMessages, _errMessages, _allMessages } = options.result;
 
       childProcess.stdout.on(
         "data",
         makeOnDataCallback({
           format,
-          allMessages,
+          _allMessages,
           dataCallbacks,
           silent,
-          messages: outMessages,
+          messages: _outMessages,
           std: "stdout"
         })
       );
@@ -43,10 +43,10 @@ export default function childProcessData(
         "data",
         makeOnDataCallback({
           format,
-          allMessages,
+          _allMessages,
           dataCallbacks,
           silent,
-          messages: errMessages,
+          messages: _errMessages,
           std: "stderr"
         })
       );

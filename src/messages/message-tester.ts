@@ -8,7 +8,7 @@ export default class MessageTester extends MessageAggregator {
   }
 
   public multiTest(fns: TestFunction[]): boolean {
-    return this.allMessages.every(
+    return this._allMessages.every(
       (msg: string): boolean => {
         return fns.every((fn): boolean => fn(msg));
       }
@@ -37,7 +37,7 @@ export default class MessageTester extends MessageAggregator {
     let idx = -1;
     let ok = true;
 
-    this.allMessages.every(
+    this._allMessages.every(
       (msg: string, i: number): boolean => {
         pat = msg.match(pattern);
         if (pat) {
@@ -61,7 +61,7 @@ export default class MessageTester extends MessageAggregator {
 
     if (typeof pat.index === "number") {
       // All tests succeeded until pattern was found: One last to go
-      const m = this.allMessages[idx].substring(
+      const m = this._allMessages[idx].substring(
         0,
         pat.index + (included ? pat[0].length : 0)
       );

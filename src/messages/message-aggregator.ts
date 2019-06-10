@@ -1,30 +1,30 @@
 export default class MessageAggregator {
-  protected readonly outMessages: string[];
-  protected readonly errMessages: string[];
-  protected readonly allMessages: string[];
+  protected readonly _outMessages: string[];
+  protected readonly _errMessages: string[];
+  protected readonly _allMessages: string[];
 
   public constructor() {
-    this.outMessages = [];
-    this.errMessages = [];
-    this.allMessages = [];
+    this._outMessages = [];
+    this._errMessages = [];
+    this._allMessages = [];
   }
 
   public out(): string {
-    return this.outMessages.join("");
+    return this._outMessages.join("");
   }
 
   public err(): string {
-    return this.errMessages.join("");
+    return this._errMessages.join("");
   }
 
   public all(): string {
-    return this.allMessages.join("");
+    return this._allMessages.join("");
   }
 
   public forget(): void {
-    this.outMessages.length = 0;
-    this.errMessages.length = 0;
-    this.allMessages.length = 0;
+    this._outMessages.length = 0;
+    this._errMessages.length = 0;
+    this._allMessages.length = 0;
   }
 
   public forgetUpTo(
@@ -38,7 +38,7 @@ export default class MessageAggregator {
     let aIdx = -1;
     let remains;
 
-    this.allMessages.some(
+    this._allMessages.some(
       (msg: string, idx: number): boolean => {
         const match = msg.match(pattern);
 
@@ -49,17 +49,17 @@ export default class MessageAggregator {
           );
 
           if (remains) {
-            if (msg === this.outMessages[0]) {
-              this.outMessages[0] = remains;
+            if (msg === this._outMessages[0]) {
+              this._outMessages[0] = remains;
             } else {
-              this.errMessages[0] = remains;
+              this._errMessages[0] = remains;
             }
           } else {
             if (included) {
-              if (msg === this.outMessages[0]) {
-                this.outMessages.shift();
+              if (msg === this._outMessages[0]) {
+                this._outMessages.shift();
               } else {
-                this.errMessages.shift();
+                this._errMessages.shift();
               }
             }
           }
@@ -67,10 +67,10 @@ export default class MessageAggregator {
           return true;
         }
 
-        if (msg === this.outMessages[0]) {
-          this.outMessages.shift();
+        if (msg === this._outMessages[0]) {
+          this._outMessages.shift();
         } else {
-          this.errMessages.shift();
+          this._errMessages.shift();
         }
 
         return false;
@@ -78,14 +78,14 @@ export default class MessageAggregator {
     );
 
     if (aIdx === -1) {
-      this.allMessages.length = 0;
+      this._allMessages.length = 0;
       throw new Error(`"${message}" not found in messages up till now`);
     }
 
-    this.allMessages.splice(0, included && !remains ? aIdx + 1 : aIdx);
+    this._allMessages.splice(0, included && !remains ? aIdx + 1 : aIdx);
 
     if (remains) {
-      this.allMessages[0] = remains;
+      this._allMessages[0] = remains;
     }
   }
 }

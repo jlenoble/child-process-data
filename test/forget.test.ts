@@ -39,11 +39,11 @@ describe("Testing childProcessData", () => {
       node("./test/examples/error-exit.js").catch(err => {
         const res = err.result;
         expect(res.out()).to.equal("lorem\nipsum\nsit\n");
-        expect(res.err()).to.equal("dolor\n" + res.errMessages[1]);
+        expect(res.err()).to.equal("dolor\n" + res._errMessages[1]);
         res.forgetUpTo("dolor\n");
         expect(res.out()).to.equal("sit\n");
-        expect(res.err()).to.equal("dolor\n" + res.errMessages[1]);
-        expect(res.all()).to.equal("dolor\nsit\n" + res.errMessages[1]);
+        expect(res.err()).to.equal("dolor\n" + res._errMessages[1]);
+        expect(res.all()).to.equal("dolor\nsit\n" + res._errMessages[1]);
       })
     ]);
   });

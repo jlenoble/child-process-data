@@ -4,9 +4,9 @@ import MessageTester, { TestFunction } from "./messages/message-tester";
 
 export interface Result {
   childProcess: ChildProcessWithReadableStdStreams;
-  outMessages: string[];
-  errMessages: string[];
-  allMessages: string[];
+  _outMessages: string[];
+  _errMessages: string[];
+  _allMessages: string[];
 
   out(): string;
   err(): string;

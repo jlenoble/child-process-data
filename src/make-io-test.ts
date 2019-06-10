@@ -109,8 +109,8 @@ export function makeIOTest (options) {
       const stdin = this.childProcess.stdin;
 
       const check = () => {
-        expect(results.outMessages.join('')).to.equal(outs.join(''));
-        expect(results.errMessages.join('')).to.equal(errs.join(''));
+        expect(results._outMessages.join('')).to.equal(outs.join(''));
+        expect(results._errMessages.join('')).to.equal(errs.join(''));
       };
 
       return new Promise(resolve => {
