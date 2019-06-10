@@ -52,7 +52,8 @@ const protoDataCallbacks: ProtoDataCallbacks = {
 };
 
 export default class GulpHandler extends LevelingHandler {
-  public constructor(options?: Options) {
-    super(protoDataCallbacks, options);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public constructor(start: Promise<any>, end: Promise<any>) {
+    super(protoDataCallbacks, start, end);
   }
 }

@@ -28,11 +28,10 @@ export default abstract class Handler extends ValidationWindow<void> {
 
   public constructor(
     protoDataCallbacks: ProtoDataCallbacks,
-    options: Options = {}
+    start: Promise<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+    end: Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
   ) {
-    const p = delays([options.startDelay || 0, options.endDelay || 0]);
-
-    super(p[0], p[1]);
+    super(start, end);
 
     this._dataCallbacks = {};
     this._dataLevel = -1;

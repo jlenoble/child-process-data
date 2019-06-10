@@ -10,9 +10,10 @@ class LevelMismatchError extends Error {
 export default class LevelingHandler extends Handler {
   public constructor(
     protoDataCallbacks: ProtoDataCallbacks,
-    options?: Options
+    start: Promise<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+    end: Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
   ) {
-    super(protoDataCallbacks, options);
+    super(protoDataCallbacks, start, end);
 
     this._dataLevel = 0;
   }

@@ -1,5 +1,5 @@
 import { Options, NormalizedOptions } from "./options";
-import GulpHandler from "./patterns/gulp-handler";
+import HandlerAggregator from "./patterns/aggregator";
 
 export default function normalizeOptions(opts: Options): NormalizedOptions {
   const options = Object.assign(
@@ -22,7 +22,7 @@ export default function normalizeOptions(opts: Options): NormalizedOptions {
 
   Object.assign(options, {
     dataCallbacks: {
-      ...new GulpHandler(options).getBoundCallbacks()
+      ...new HandlerAggregator(options).getBoundCallbacks()
     }
   });
 
