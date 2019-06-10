@@ -1,5 +1,16 @@
 import { ValidationWindow, delays } from "promise-plumber";
-import { Options, ColoringOptions } from "../options";
+import { Options } from "../options";
+
+export interface ColoringOptions {
+  coloredChunk: string;
+  logger: [object, string];
+}
+
+export interface CallbackOptions {
+  pattern: string;
+  regexp: RegExp;
+  callback: ColoringCallback;
+}
 
 export type ColoringCallback = (match: string[]) => ColoringOptions;
 

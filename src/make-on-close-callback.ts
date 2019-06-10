@@ -1,5 +1,5 @@
 import stripAnsi from "strip-ansi";
-import { ExtendedOptions } from "./options";
+import { ExtendedOptions } from "./extend-options";
 
 export default function makeOnCloseCallback(
   options: ExtendedOptions,

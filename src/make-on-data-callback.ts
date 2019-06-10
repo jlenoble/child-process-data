@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import { DataCallbackOptions } from "./options";
 
 export default function makeOnDataCallback({
   format,

@@ -1,7 +1,11 @@
 import chalk from "chalk";
-import { Options, ColoringOptions } from "../options";
+import { Options } from "../options";
 import LevelingHandler from "./leveling-handler";
-import { ColoringCallback, ProtoDataCallbacks } from "./handler";
+import {
+  ColoringCallback,
+  ColoringOptions,
+  ProtoDataCallbacks
+} from "./handler";
 
 const protoDataCallbacks: ProtoDataCallbacks = {
   "Starting '(\\w+(?:[-:]\\w+)*)'\\.\\.\\.": (

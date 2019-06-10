@@ -1,5 +1,4 @@
-import { DataCallbacks } from "./data-callbacks/handler";
-import { CallbackOptions } from "./options";
+import { CallbackOptions, DataCallbacks } from "./patterns/handler";
 
 export default function makeDataCallbacks(
   callbacks: DataCallbacks

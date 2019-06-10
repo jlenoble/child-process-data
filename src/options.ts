@@ -1,4 +1,4 @@
-import { DataCallbacks, ColoringCallback } from "./patterns/handler";
+import { DataCallbacks } from "./patterns/handler";
 import { Result } from "./extend-options";
 
 export interface Options {
@@ -23,15 +23,4 @@ export interface NormalizedOptions extends Options {
   result?: Result;
   resolve?: Function;
   reject?: Function;
-}
-
-export interface ColoringOptions {
-  coloredChunk: string;
-  logger: [object, string];
-}
-
-export interface CallbackOptions {
-  pattern: string;
-  regexp: RegExp;
-  callback: ColoringCallback;
 }
