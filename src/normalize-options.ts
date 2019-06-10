@@ -1,14 +1,11 @@
 import { Options, NormalizedOptions } from "./options";
 import GulpHandler from "./patterns/gulp-handler";
 
-export default function makeOptions(
-  opts: Options,
-  childProcessData: { silent: boolean }
-): NormalizedOptions {
+export default function normalizeOptions(opts: Options): NormalizedOptions {
   const options = Object.assign(
     {
       format: "utf-8",
-      silent: childProcessData.silent,
+      silent: false,
       startDelay: -1,
       listenTime: 30000,
       endDelay: -1,

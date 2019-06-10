@@ -1,11 +1,11 @@
 import checkChildProcess from "./check-child-process";
-import makeOptions from "./make-options";
+import normalizeOptions from "./normalize-options";
 import makeDataCallbacks from "./make-data-callbacks";
 import extendOptions from "./extend-options";
 import makeOnDataCallback from "./make-on-data-callback";
 import makeOnCloseCallback from "./make-on-close-callback";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
-import { Result } from "./options";
+import { Result } from "./extend-options";
 
 export interface Options {
   silent?: boolean;
@@ -17,7 +17,7 @@ export default function childProcessData(
 ): Promise<Result> {
   checkChildProcess(childProcess);
 
-  const options = makeOptions(opts, childProcessData);
+  const options = normalizeOptions(opts);
   const dataCallbacks = makeDataCallbacks(options.dataCallbacks);
 
   const p = new Promise(
