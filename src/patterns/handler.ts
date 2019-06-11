@@ -11,7 +11,7 @@ export interface CallbackOptions {
   callback: ColoringCallback;
 }
 
-export type ColoringCallback = (match: string[]) => ColoringOptions;
+export type ColoringCallback = (match: RegExpMatchArray) => ColoringOptions;
 
 export interface ProtoDataCallbacks {
   [pattern: string]: (handler: Handler) => ColoringCallback;
