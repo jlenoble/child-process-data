@@ -1,6 +1,6 @@
 import childProcessData from "./child-process-data";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
-import { Options } from "./options";
+import { Options } from "./normalize-options";
 
 const messages = new Map();
 const interval = 500;

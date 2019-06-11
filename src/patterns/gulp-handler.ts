@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import { Options } from "../options";
 import LevelingHandler from "./leveling-handler";
 import {
   ColoringCallback,

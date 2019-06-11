@@ -1,4 +1,3 @@
-import { Options } from "../options";
 import Handler, { ProtoDataCallbacks } from "./handler";
 
 class LevelMismatchError extends Error {

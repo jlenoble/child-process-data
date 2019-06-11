@@ -1,4 +1,4 @@
-import { NormalizedOptions } from "./options";
+import { NormalizedOptions } from "./normalize-options";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
 import MessageTester, { TestFunction } from "./messages/message-tester";
 

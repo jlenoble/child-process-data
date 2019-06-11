@@ -1,5 +1,4 @@
-import { ValidationWindow, delays } from "promise-plumber";
-import { Options } from "../options";
+import { ValidationWindow } from "promise-plumber";
 
 export interface ColoringOptions {
   coloredChunk: string;
