@@ -21,6 +21,18 @@ export default class MessageAggregator {
     return this._allMessages.join("");
   }
 
+  public outPush(str: string): void {
+    this._outMessages.push(str);
+  }
+
+  public errPush(str: string): void {
+    this._errMessages.push(str);
+  }
+
+  public allPush(str: string): void {
+    this._allMessages.push(str);
+  }
+
   public forget(): void {
     this._outMessages.length = 0;
     this._errMessages.length = 0;

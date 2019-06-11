@@ -1,5 +1,7 @@
 import HandlerAggregator from "./patterns/aggregator";
 import { CallbackOptions, DataCallbacks } from "./patterns/handler";
+import Result from "./messages/result";
+import colorChunkFactory from "./patterns/color-chunk";
 
 export interface Options {
   format?: string;
@@ -21,8 +23,11 @@ export default class NormalizedOptions implements Options {
   public readonly perCallbackOptions: CallbackOptions[];
 
   public readonly aggregator: HandlerAggregator;
+  public readonly result: Result;
 
-  public constructor(opts: Options = {}) {
+  public constructor(opts: Options = {}, result: Result) {
+    this.result = result;
+
     const options = Object.assign(
       {
         format: "utf-8",
@@ -60,5 +65,33 @@ export default class NormalizedOptions implements Options {
     );
 
     this.aggregator = aggregator;
+  }
+
+  public stdoutData(data: Buffer): void {
+    const str = data.toString(this.format);
+    this.result.outPush(str);
+    this.result.allPush(str);
+
+    const colorChunk = colorChunkFactory({
+      silent: this.silent,
+      std: "stdout",
+      perCallbackOptions: this.perCallbackOptions
+    });
+
+    colorChunk(str);
+  }
+
+  public stderrData(data: Buffer): void {
+    const str = data.toString(this.format);
+    this.result.errPush(str);
+    this.result.allPush(str);
+
+    const colorChunk = colorChunkFactory({
+      silent: this.silent,
+      std: "stderr",
+      perCallbackOptions: this.perCallbackOptions
+    });
+
+    colorChunk(str);
   }
 }

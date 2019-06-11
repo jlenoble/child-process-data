@@ -4,7 +4,6 @@ import { ChildProcessWithReadableStdStreams } from "./child-process";
 import Result from "./messages/result";
 import checkChildProcess from "./check-child-process";
 import NormalizedOptions, { Options } from "./normalize-options";
-import makeOnDataCallback from "./make-on-data-callback";
 
 export class ErrorWithHistory extends Error {
   public readonly result: Result;
@@ -61,38 +60,21 @@ export class ChildProcessData extends Pool<Result> {
       // Add this._result to objects returned on resolution
       this.add(this._result);
 
-      this._options = new NormalizedOptions(options);
+      this._options = new NormalizedOptions(options, this._result);
 
-      const { silent, format, aggregator } = this._options;
-
-      aggregator.then(this.resolve.bind(this), this.reject.bind(this));
+      this._options.aggregator.then(
+        this.resolve.bind(this),
+        this.reject.bind(this)
+      );
 
       childProcess.stdout.on(
         "data",
-        makeOnDataCallback({
-          format,
-          // @ts-ignore
-          allMessages: this._result._allMessages,
-          dataCallbacks: this._options.perCallbackOptions,
-          silent,
-          // @ts-ignore
-          messages: this._result._outMessages,
-          std: "stdout"
-        })
+        this._options.stdoutData.bind(this._options)
       );
 
       childProcess.stderr.on(
         "data",
-        makeOnDataCallback({
-          format,
-          // @ts-ignore
-          allMessages: this._result._allMessages,
-          dataCallbacks: this._options.perCallbackOptions,
-          silent,
-          // @ts-ignore
-          messages: this._result._errMessages,
-          std: "stderr"
-        })
+        this._options.stderrData.bind(this._options)
       );
 
       childProcess.on(
