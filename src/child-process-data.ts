@@ -4,7 +4,6 @@ import { ChildProcessWithReadableStdStreams } from "./child-process";
 import Result from "./messages/result";
 import checkChildProcess from "./check-child-process";
 import NormalizedOptions, { Options } from "./normalize-options";
-import makeDataCallbacks from "./make-data-callbacks";
 import makeOnDataCallback from "./make-on-data-callback";
 
 export class ErrorWithHistory extends Error {
@@ -64,8 +63,6 @@ export class ChildProcessData extends Pool<Result> {
 
       this._options = new NormalizedOptions(options);
 
-      const dataCallbacks = makeDataCallbacks(this._options.dataCallbacks);
-
       const { silent, format, aggregator } = this._options;
 
       aggregator.then(this.resolve.bind(this), this.reject.bind(this));
@@ -76,7 +73,7 @@ export class ChildProcessData extends Pool<Result> {
           format,
           // @ts-ignore
           allMessages: this._result._allMessages,
-          dataCallbacks,
+          dataCallbacks: this._options.perCallbackOptions,
           silent,
           // @ts-ignore
           messages: this._result._outMessages,
@@ -90,7 +87,7 @@ export class ChildProcessData extends Pool<Result> {
           format,
           // @ts-ignore
           allMessages: this._result._allMessages,
-          dataCallbacks,
+          dataCallbacks: this._options.perCallbackOptions,
           silent,
           // @ts-ignore
           messages: this._result._errMessages,

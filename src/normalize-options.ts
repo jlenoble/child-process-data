@@ -1,5 +1,5 @@
 import HandlerAggregator from "./patterns/aggregator";
-import { DataCallbacks } from "./patterns/handler";
+import { CallbackOptions, DataCallbacks } from "./patterns/handler";
 
 export interface Options {
   format?: string;
@@ -18,7 +18,7 @@ export default class NormalizedOptions implements Options {
   public readonly listenTime: number;
   public readonly endDelay: number;
   public readonly dontBlock: boolean;
-  public readonly dataCallbacks: DataCallbacks;
+  public readonly perCallbackOptions: CallbackOptions[];
 
   public readonly aggregator: HandlerAggregator;
 
@@ -49,8 +49,16 @@ export default class NormalizedOptions implements Options {
     this.dontBlock = options.dontBlock;
 
     const aggregator = new HandlerAggregator(this);
+    const callbacks: DataCallbacks = { ...aggregator.getBoundCallbacks() };
 
-    this.dataCallbacks = { ...aggregator.getBoundCallbacks() };
+    this.perCallbackOptions = Object.keys(callbacks).map(
+      (key): CallbackOptions => ({
+        pattern: key,
+        regexp: new RegExp(key),
+        callback: callbacks[key]
+      })
+    );
+
     this.aggregator = aggregator;
   }
 }
