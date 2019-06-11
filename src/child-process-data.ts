@@ -3,10 +3,7 @@ import { Pool, Executor } from "promise-plumber";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
 import Result from "./messages/result";
 import checkChildProcess from "./check-child-process";
-import normalizeOptions, {
-  Options,
-  NormalizedOptions
-} from "./normalize-options";
+import NormalizedOptions, { Options } from "./normalize-options";
 import makeDataCallbacks from "./make-data-callbacks";
 import makeOnDataCallback from "./make-on-data-callback";
 
@@ -56,26 +53,16 @@ export class ChildProcessData extends Pool<Result> {
 
     super();
 
-    this._childProcess = childProcess;
-
-    this._options = {
-      format: "utf-8",
-      silent: ChildProcessData._silent,
-      startDelay: -1,
-      listenTime: 30000,
-      endDelay: -1,
-      dontBlock: false,
-      dataCallbacks: {}
-    };
-
-    this._result = new Result(childProcess);
-
-    // Add this._result to objects returned on resolution
-    this.add(this._result);
-
     try {
       checkChildProcess(childProcess);
-      this._options = normalizeOptions(options);
+
+      this._childProcess = childProcess;
+      this._result = new Result(childProcess);
+
+      // Add this._result to objects returned on resolution
+      this.add(this._result);
+
+      this._options = new NormalizedOptions(options);
 
       const dataCallbacks = makeDataCallbacks(this._options.dataCallbacks);
 

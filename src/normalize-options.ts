@@ -1,6 +1,5 @@
 import HandlerAggregator from "./patterns/aggregator";
 import { DataCallbacks } from "./patterns/handler";
-import { Result } from "./extend-options";
 
 export interface Options {
   format?: string;
@@ -12,47 +11,46 @@ export interface Options {
   dataCallbacks?: DataCallbacks;
 }
 
-export interface NormalizedOptions extends Options {
-  format: string;
-  silent: boolean;
-  startDelay: number;
-  listenTime: number;
-  endDelay: number;
-  dontBlock: boolean;
-  dataCallbacks: DataCallbacks;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result?: Result;
-  resolve?: Function;
-  reject?: Function;
-}
+export default class NormalizedOptions implements Options {
+  public readonly format: string;
+  public readonly silent: boolean;
+  public readonly startDelay: number;
+  public readonly listenTime: number;
+  public readonly endDelay: number;
+  public readonly dontBlock: boolean;
+  public readonly dataCallbacks: DataCallbacks;
 
-export default function normalizeOptions(opts: Options): NormalizedOptions {
-  const options = Object.assign(
-    {
-      format: "utf-8",
-      silent: false,
-      startDelay: 0,
-      listenTime: 30000,
-      endDelay: 60000,
-      dontBlock: false,
-      dataCallbacks: {}
-    },
-    opts
-  );
+  public readonly aggregator: HandlerAggregator;
 
-  if (options.dontBlock) {
-    options.startDelay === -1 && (options.startDelay = 1);
-    options.endDelay === -1 && (options.endDelay = 1);
-  }
+  public constructor(opts: Options = {}) {
+    const options = Object.assign(
+      {
+        format: "utf-8",
+        silent: false,
+        startDelay: 0,
+        listenTime: 30000,
+        endDelay: 60000,
+        dontBlock: false,
+        dataCallbacks: {}
+      },
+      opts
+    );
 
-  const aggregator = new HandlerAggregator(options);
-
-  Object.assign(options, {
-    aggregator,
-    dataCallbacks: {
-      ...aggregator.getBoundCallbacks()
+    if (options.dontBlock) {
+      options.startDelay === -1 && (options.startDelay = 1);
+      options.endDelay === -1 && (options.endDelay = 1);
     }
-  });
 
-  return options;
+    this.format = options.format;
+    this.silent = options.silent;
+    this.startDelay = options.startDelay;
+    this.listenTime = options.listenTime;
+    this.endDelay = options.endDelay;
+    this.dontBlock = options.dontBlock;
+
+    const aggregator = new HandlerAggregator(this);
+
+    this.dataCallbacks = { ...aggregator.getBoundCallbacks() };
+    this.aggregator = aggregator;
+  }
 }
