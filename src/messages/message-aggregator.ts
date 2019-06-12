@@ -53,7 +53,7 @@ export default class MessageAggregator {
 
   public forgetUpTo(
     message: string | RegExp,
-    { included = false } = { included: false }
+    { included = false }: { included?: boolean } = { included: false }
   ): void {
     const pattern =
       message instanceof RegExp
