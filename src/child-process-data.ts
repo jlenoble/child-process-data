@@ -77,16 +77,13 @@ export class ChildProcessData extends Pool<Result> {
         this._options.stderrData.bind(this._options)
       );
 
-      childProcess.on(
-        "close",
-        (code: number): void => {
-          if (!code) {
-            this.resolve();
-          } else {
-            this.reject(new ErrorWithHistory(code, this._result));
-          }
+      childProcess.on("close", (code: number): void => {
+        if (!code) {
+          this.resolve();
+        } else {
+          this.reject(new ErrorWithHistory(code, this._result));
         }
-      );
+      });
     } catch (e) {
       this.reject(e);
     }

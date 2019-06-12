@@ -35,12 +35,10 @@ export default abstract class Handler extends ValidationWindow<void> {
     this._dataCallbacks = {};
     this._dataLevel = -1;
 
-    Object.keys(protoDataCallbacks).forEach(
-      (key): void => {
-        // Bind all data callbacks
-        this._dataCallbacks[key] = protoDataCallbacks[key](this);
-      }
-    );
+    Object.keys(protoDataCallbacks).forEach((key): void => {
+      // Bind all data callbacks
+      this._dataCallbacks[key] = protoDataCallbacks[key](this);
+    });
   }
 
   public getBoundCallbacks(): DataCallbacks {

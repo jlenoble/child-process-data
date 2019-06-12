@@ -22,7 +22,7 @@ function toRegExp(msg: string | RegExp): RegExp {
 
 export async function interceptMessage(
   proc: ChildProcessWithReadableStdStreams,
-  msg = "",
+  msg: string | RegExp = "",
   options: Options = {}
 ): Promise<void> {
   const regex = toRegExp(msg);
@@ -44,7 +44,7 @@ export async function interceptMessage(
   messages.set(key, { results, countdown, lastCountdown });
 }
 
-export function resolveMessage(msg): Promise<void> {
+export function resolveMessage(msg: string | RegExp): Promise<void> {
   const regex = toRegExp(msg);
   const key = regex.source;
   let attempts = Math.ceil(panicTime / interval);
@@ -71,13 +71,11 @@ export function resolveMessage(msg): Promise<void> {
               }
 
               if (--lastCountdown) {
-                return new Promise(
-                  (resolve, reject): void => {
-                    setTimeout((): void => {
-                      fn().then(resolve, reject);
-                    }, interval);
-                  }
-                );
+                return new Promise((resolve, reject): void => {
+                  setTimeout((): void => {
+                    fn().then(resolve, reject);
+                  }, interval);
+                });
               }
 
               return;
@@ -92,13 +90,11 @@ export function resolveMessage(msg): Promise<void> {
             }
           }
 
-          return new Promise(
-            (resolve, reject): void => {
-              setTimeout((): void => {
-                fn().then(resolve, reject);
-              }, interval);
-            }
-          );
+          return new Promise((resolve, reject): void => {
+            setTimeout((): void => {
+              fn().then(resolve, reject);
+            }, interval);
+          });
         }
       )
       .catch(

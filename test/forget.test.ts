@@ -15,20 +15,16 @@ describe("Testing childProcessData", (): void => {
     [void, void]
   > => {
     return Promise.all([
-      echo("Little silly message").then(
-        (res): void => {
-          expect(res.all()).to.equal("Little silly message\n");
-          res.forget();
-          expect(res.all()).to.equal("");
-        }
-      ),
-      echo("Another little silly message").then(
-        (res): void => {
-          expect(res.all()).to.equal("Another little silly message\n");
-          res.forget();
-          expect(res.all()).to.equal("");
-        }
-      )
+      echo("Little silly message").then((res): void => {
+        expect(res.all()).to.equal("Little silly message\n");
+        res.forget();
+        expect(res.all()).to.equal("");
+      }),
+      echo("Another little silly message").then((res): void => {
+        expect(res.all()).to.equal("Another little silly message\n");
+        res.forget();
+        expect(res.all()).to.equal("");
+      })
     ]);
   });
 
@@ -36,27 +32,23 @@ describe("Testing childProcessData", (): void => {
     [void, void | Result]
   > => {
     return Promise.all([
-      node("./test/examples/normal-exit.js").then(
-        (res): void => {
-          expect(res.out()).to.equal("lorem\nipsum\nsit\n");
-          expect(res.err()).to.equal("dolor\namet\n");
-          res.forgetUpTo("dolor\n", { included: true });
-          expect(res.out()).to.equal("sit\n");
-          expect(res.err()).to.equal("amet\n");
-          expect(res.all()).to.equal("sit\namet\n");
-        }
-      ),
-      node("./test/examples/error-exit.js").catch(
-        (err): void => {
-          const res = err.result;
-          expect(res.out()).to.equal("lorem\nipsum\nsit\n");
-          expect(res.err()).to.equal("dolor\n" + res._errMessages[1]);
-          res.forgetUpTo("dolor\n");
-          expect(res.out()).to.equal("sit\n");
-          expect(res.err()).to.equal("dolor\n" + res._errMessages[1]);
-          expect(res.all()).to.equal("dolor\nsit\n" + res._errMessages[1]);
-        }
-      )
+      node("./test/examples/normal-exit.js").then((res): void => {
+        expect(res.out()).to.equal("lorem\nipsum\nsit\n");
+        expect(res.err()).to.equal("dolor\namet\n");
+        res.forgetUpTo("dolor\n", { included: true });
+        expect(res.out()).to.equal("sit\n");
+        expect(res.err()).to.equal("amet\n");
+        expect(res.all()).to.equal("sit\namet\n");
+      }),
+      node("./test/examples/error-exit.js").catch((err): void => {
+        const res = err.result;
+        expect(res.out()).to.equal("lorem\nipsum\nsit\n");
+        expect(res.err()).to.equal("dolor\n" + res._errMessages[1]);
+        res.forgetUpTo("dolor\n");
+        expect(res.out()).to.equal("sit\n");
+        expect(res.err()).to.equal("dolor\n" + res._errMessages[1]);
+        expect(res.all()).to.equal("dolor\nsit\n" + res._errMessages[1]);
+      })
     ]);
   });
 

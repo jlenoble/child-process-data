@@ -15,21 +15,17 @@ describe("Testing childProcessData", (): void => {
     [void, void]
   > => {
     return Promise.all([
-      echo("Little silly message").then(
-        (res): void => {
-          expect(res.all()).to.equal("Little silly message\n");
-          expect(res.test((msg): boolean => msg === "Little silly message\n"))
-            .to.be.true;
-        }
-      ),
-      echo("Another little silly message").then(
-        (res): void => {
-          expect(res.all()).to.equal("Another little silly message\n");
-          expect(
-            res.test((msg): boolean => msg === "Another little silly message\n")
-          ).to.be.true;
-        }
-      )
+      echo("Little silly message").then((res): void => {
+        expect(res.all()).to.equal("Little silly message\n");
+        expect(res.test((msg): boolean => msg === "Little silly message\n")).to
+          .be.true;
+      }),
+      echo("Another little silly message").then((res): void => {
+        expect(res.all()).to.equal("Another little silly message\n");
+        expect(
+          res.test((msg): boolean => msg === "Another little silly message\n")
+        ).to.be.true;
+      })
     ]);
   });
 

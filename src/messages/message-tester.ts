@@ -8,11 +8,9 @@ export default class MessageTester extends MessageAggregator {
   }
 
   public multiTest(fns: TestFunction[]): boolean {
-    return this._allMessages.every(
-      (msg: string): boolean => {
-        return fns.every((fn): boolean => fn(msg));
-      }
-    );
+    return this._allMessages.every((msg: string): boolean => {
+      return fns.every((fn): boolean => fn(msg));
+    });
   }
 
   public testUpTo(
@@ -37,17 +35,15 @@ export default class MessageTester extends MessageAggregator {
     let idx = -1;
     let ok = true;
 
-    this._allMessages.every(
-      (msg: string, i: number): boolean => {
-        pat = msg.match(pattern);
-        if (pat) {
-          idx = i;
-          return false;
-        }
-        ok = fns.every((fn): boolean => fn(msg));
-        return ok;
+    this._allMessages.every((msg: string, i: number): boolean => {
+      pat = msg.match(pattern);
+      if (pat) {
+        idx = i;
+        return false;
       }
-    );
+      ok = fns.every((fn): boolean => fn(msg));
+      return ok;
+    });
 
     // A test failed
     if (!ok) {

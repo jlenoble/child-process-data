@@ -62,44 +62,40 @@ export default class MessageAggregator {
     let aIdx = -1;
     let remains;
 
-    this._allMessages.some(
-      (msg: string, idx: number): boolean => {
-        const match = msg.match(pattern);
+    this._allMessages.some((msg: string, idx: number): boolean => {
+      const match = msg.match(pattern);
 
-        if (match && typeof match.index == "number") {
-          aIdx = idx;
-          remains = msg.substring(
-            match.index + (included ? match[0].length : 0)
-          );
+      if (match && typeof match.index == "number") {
+        aIdx = idx;
+        remains = msg.substring(match.index + (included ? match[0].length : 0));
 
-          if (remains) {
-            if (msg === this._outMessages[0]) {
-              this._outMessages[0] = remains;
-            } else {
-              this._errMessages[0] = remains;
-            }
+        if (remains) {
+          if (msg === this._outMessages[0]) {
+            this._outMessages[0] = remains;
           } else {
-            if (included) {
-              if (msg === this._outMessages[0]) {
-                this._outMessages.shift();
-              } else {
-                this._errMessages.shift();
-              }
+            this._errMessages[0] = remains;
+          }
+        } else {
+          if (included) {
+            if (msg === this._outMessages[0]) {
+              this._outMessages.shift();
+            } else {
+              this._errMessages.shift();
             }
           }
-
-          return true;
         }
 
-        if (msg === this._outMessages[0]) {
-          this._outMessages.shift();
-        } else {
-          this._errMessages.shift();
-        }
-
-        return false;
+        return true;
       }
-    );
+
+      if (msg === this._outMessages[0]) {
+        this._outMessages.shift();
+      } else {
+        this._errMessages.shift();
+      }
+
+      return false;
+    });
 
     if (aIdx === -1) {
       this._allMessages.length = 0;

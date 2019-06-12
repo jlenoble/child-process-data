@@ -28,16 +28,14 @@ export default function ColorChunkFactory({
     let found = false;
     let result: Result;
 
-    perCallbackOptions.some(
-      ({ regexp, callback }): boolean => {
-        const match = chunk.match(regexp);
-        if (match) {
-          found = true;
-          result = Object.assign(callback(match), { match });
-        }
-        return found;
+    perCallbackOptions.some(({ regexp, callback }): boolean => {
+      const match = chunk.match(regexp);
+      if (match) {
+        found = true;
+        result = Object.assign(callback(match), { match });
       }
-    );
+      return found;
+    });
 
     if (!found) {
       if (!silent) {

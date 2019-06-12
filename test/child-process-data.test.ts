@@ -18,16 +18,12 @@ describe("Testing childProcessData", (): void => {
     [void, void]
   > => {
     return Promise.all([
-      echo("Little silly message").then(
-        (res): void => {
-          expect(res.all()).to.equal("Little silly message\n");
-        }
-      ),
-      echo("Another little silly message").then(
-        (res): void => {
-          expect(res.all()).to.equal("Another little silly message\n");
-        }
-      )
+      echo("Little silly message").then((res): void => {
+        expect(res.all()).to.equal("Little silly message\n");
+      }),
+      echo("Another little silly message").then((res): void => {
+        expect(res.all()).to.equal("Another little silly message\n");
+      })
     ]);
   });
 
@@ -52,11 +48,9 @@ describe("Testing childProcessData", (): void => {
       expect(all).to.match(/Test message \d: Hello!/);
       expect(all).to.match(/Finished 'subtest' after (\d+\.?\d*) m?s/);
     } catch (e) {
-      return deepKill(res.pid).then(
-        (): void => {
-          throw e;
-        }
-      );
+      return deepKill(res.pid).then((): void => {
+        throw e;
+      });
     }
 
     return deepKill(res.pid);
@@ -87,11 +81,9 @@ describe("Testing childProcessData", (): void => {
       );
       expect(all).to.match(/Finished 'subtest' after (\d+\.?\d*) m?s/);
     } catch (e) {
-      return deepKill(res.pid).then(
-        (): void => {
-          throw e;
-        }
-      );
+      return deepKill(res.pid).then((): void => {
+        throw e;
+      });
     }
 
     return deepKill(res.pid);
