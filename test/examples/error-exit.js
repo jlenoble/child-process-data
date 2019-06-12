@@ -5,11 +5,11 @@ const err = (msg, n) => {
   setTimeout(process.stderr.write.bind(process.stderr), n, msg);
 };
 
-out('lorem\n', 10);
-out('ipsum\n', 20);
-err('dolor\n', 30);
-out('sit\n', 40);
+out("lorem\n", 10);
+out("ipsum\n", 20);
+err("dolor\n", 30);
+out("sit\n", 40);
 
 setTimeout(() => {
-  throw new Error('amet\n');
+  throw new Error("amet\n");
 }, 50);
