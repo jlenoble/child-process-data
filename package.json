@@ -61,11 +61,12 @@
     "@types/gulp-rename": "^0.0.33",
     "@types/gulp-replace": "^0.0.31",
     "@types/gulp-sourcemaps": "^0.0.32",
+    "@types/node": "^12.0.8",
     "@types/prettier": "^1.16.4",
     "@types/source-map-support": "^0.5.0",
     "@types/yargs": "^13.0.0",
-    "@typescript-eslint/eslint-plugin": "^1.9.0",
-    "@typescript-eslint/parser": "^1.9.0",
+    "@typescript-eslint/eslint-plugin": "^1.10.2",
+    "@typescript-eslint/parser": "^1.10.2",
     "autoreload-gulp": "^0.4.1",
     "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
@@ -91,16 +92,17 @@
     "gulp-wrap": "^0.15.0",
     "markdown-include": "^0.4.3",
     "mocha": "<6",
-    "mochawesome": "^3.1.2",
+    "mochawesome": "^4.0.0",
     "muter": "^0.7.0",
     "node-fs-extra": "^0.8.2",
     "plumb-gulp": "^0.2.2",
-    "prettier": "^1.17.1",
+    "prettier": "^1.18.2",
     "source-map-support": "^0.5.12",
-    "typescript": "^3.4.5",
+    "typescript": "^3.5.1",
     "yargs": "^13.2.4"
   },
   "peerDependencies": {
     "chai": "*"
-  }
+  },
+  "optionalDependencies": {}
 }
