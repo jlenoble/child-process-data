@@ -2,6 +2,7 @@ import HandlerAggregator from "./patterns/aggregator";
 import { CallbackOptions, DataCallbacks } from "./patterns/handler";
 import Result from "./messages/result";
 import colorChunkFactory from "./patterns/color-chunk";
+import { collapsibleDelays, TimingOutTrigger } from "promise-plumber";
 
 export interface Options {
   format?: string;
@@ -13,13 +14,21 @@ export interface Options {
   dataCallbacks?: DataCallbacks;
 }
 
-export default class NormalizedOptions implements Options {
+export interface NormalizedOptions extends Options {
+  format: string;
+  silent: boolean;
+  startDelay: number;
+  listenTime: number;
+  endDelay: number;
+  dontBlock: boolean;
+  dataCallbacks: DataCallbacks;
+}
+
+export default class GlobalOptions {
   public readonly format: string;
   public readonly silent: boolean;
-  public readonly startDelay: number;
-  public readonly listenTime: number;
-  public readonly endDelay: number;
-  public readonly dontBlock: boolean;
+  public readonly startDelay: TimingOutTrigger<number>;
+  public readonly endDelay: TimingOutTrigger<number>;
   public readonly perCallbackOptions: CallbackOptions[];
 
   public readonly aggregator: HandlerAggregator;
@@ -28,7 +37,7 @@ export default class NormalizedOptions implements Options {
   public constructor(opts: Options = {}, result: Result) {
     this.result = result;
 
-    const options = Object.assign(
+    const options: NormalizedOptions = Object.assign(
       {
         format: "utf-8",
         silent: false,
@@ -48,10 +57,14 @@ export default class NormalizedOptions implements Options {
 
     this.format = options.format;
     this.silent = options.silent;
-    this.startDelay = options.startDelay;
-    this.listenTime = options.listenTime;
-    this.endDelay = options.endDelay;
-    this.dontBlock = options.dontBlock;
+
+    const delays = collapsibleDelays<number>([
+      options.startDelay,
+      options.endDelay
+    ]);
+
+    this.startDelay = delays[0];
+    this.endDelay = delays[1];
 
     const aggregator = new HandlerAggregator(this);
     const callbacks: DataCallbacks = { ...aggregator.getBoundCallbacks() };
@@ -93,5 +106,10 @@ export default class NormalizedOptions implements Options {
     });
 
     colorChunk(str);
+  }
+
+  public collapseDelays(): void {
+    this.startDelay.resolve();
+    this.endDelay.resolve();
   }
 }

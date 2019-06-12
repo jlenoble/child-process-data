@@ -1,7 +1,7 @@
-import { Executor, delays, Sink } from "promise-plumber";
+import { Executor, Sink } from "promise-plumber";
 import Handler, { DataCallbacks } from "./handler";
 import GulpHandler from "./gulp-handler";
-import { NormalizedOptions } from "../normalize-options";
+import NormalizedOptions from "../normalize-options";
 
 export default class HandlerAggregator extends Sink<Handler> {
   protected _handlers: Set<Handler>;
@@ -13,9 +13,8 @@ export default class HandlerAggregator extends Sink<Handler> {
       super.resolve();
     } else {
       super();
-      const p = delays([options.startDelay || 0, options.endDelay || 2000]);
       this._handlers = new Set();
-      this.add(new GulpHandler(p[0], p[1]));
+      this.add(new GulpHandler(options.startDelay, options.endDelay));
     }
   }
 
