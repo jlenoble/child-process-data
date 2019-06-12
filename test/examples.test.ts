@@ -1,7 +1,6 @@
-import childProcessData from "../src/index";
+import childProcessData, { Result } from "../src/index";
 import { spawn } from "child_process";
 import { expect } from "chai";
-import Result from "../src/messages/result";
 
 describe("Testing README.md examples", (): void => {
   it(`Testing 'Simple usage' example`, async (): Promise<void> => {

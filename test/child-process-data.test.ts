@@ -1,5 +1,4 @@
-import childProcessData from "../src/index";
-import Result from "../src/messages/result";
+import childProcessData, { Result } from "../src/index";
 import { spawn } from "child_process";
 import { expect } from "chai";
 import deepKill from "deepkill";
