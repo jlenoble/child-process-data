@@ -1,7 +1,7 @@
 import childProcessData from "../src/index";
 import { spawn } from "child_process";
 import { expect } from "chai";
-import { Result } from "../src/options";
+import Result from "../src/messages/result";
 
 describe("Testing README.md examples", (): void => {
   it(`Testing 'Simple usage' example`, async (): Promise<void> => {
@@ -25,16 +25,20 @@ describe("Testing README.md examples", (): void => {
       spawn("node", ["./test/examples/normal-exit.js"])
     );
 
-    expect(res._outMessages[0]).to.equal("lorem\n");
-    expect(res._outMessages[1]).to.equal("ipsum\n");
-    expect(res._outMessages[2]).to.equal("sit\n");
-    expect(res._errMessages[0]).to.equal("dolor\n");
-    expect(res._errMessages[1]).to.equal("amet\n");
-    expect(res._allMessages).to.include("lorem\n");
-    expect(res._allMessages).to.include("ipsum\n");
-    expect(res._allMessages).to.include("dolor\n");
-    expect(res._allMessages).to.include("sit\n");
-    expect(res._allMessages).to.include("amet\n");
+    const outMessages = res.outMessages();
+    const errMessages = res.errMessages();
+    const allMessages = res.allMessages();
+
+    expect(outMessages[0]).to.equal("lorem\n");
+    expect(outMessages[1]).to.equal("ipsum\n");
+    expect(outMessages[2]).to.equal("sit\n");
+    expect(errMessages[0]).to.equal("dolor\n");
+    expect(errMessages[1]).to.equal("amet\n");
+    expect(allMessages).to.include("lorem\n");
+    expect(allMessages).to.include("ipsum\n");
+    expect(allMessages).to.include("dolor\n");
+    expect(allMessages).to.include("sit\n");
+    expect(allMessages).to.include("amet\n");
   });
 
   it(`Testing 'Accessing all messages' example`, async (): Promise<void> => {
@@ -59,22 +63,24 @@ describe("Testing README.md examples", (): void => {
     } catch (_err) {
       const res: Result = _err.result;
 
-      expect(res._outMessages[0]).to.equal("lorem\n");
-      expect(res._outMessages[1]).to.equal("ipsum\n");
-      expect(res._outMessages[2]).to.equal("sit\n");
-      expect(res._errMessages[0]).to.equal("dolor\n");
-      expect(res._errMessages[1]).to.match(/Error:.*amet/);
-      expect(res._allMessages[0]).to.equal("lorem\n");
-      expect(res._allMessages[1]).to.equal("ipsum\n");
-      expect(res._allMessages[2]).to.equal("dolor\n");
-      expect(res._allMessages[3]).to.equal("sit\n");
-      expect(res._allMessages[4]).to.match(/Error:.*amet/);
+      const outMessages = res.outMessages();
+      const errMessages = res.errMessages();
+      const allMessages = res.allMessages();
+
+      expect(outMessages[0]).to.equal("lorem\n");
+      expect(outMessages[1]).to.equal("ipsum\n");
+      expect(outMessages[2]).to.equal("sit\n");
+      expect(errMessages[0]).to.equal("dolor\n");
+      expect(errMessages[1]).to.match(/Error:.*amet/);
+      expect(allMessages[0]).to.equal("lorem\n");
+      expect(allMessages[1]).to.equal("ipsum\n");
+      expect(allMessages[2]).to.equal("dolor\n");
+      expect(allMessages[3]).to.equal("sit\n");
+      expect(allMessages[4]).to.match(/Error:.*amet/);
 
       expect(res.out()).to.equal("lorem\nipsum\nsit\n");
-      expect(res.err()).to.equal("dolor\n" + res._errMessages[1]);
-      expect(res.all()).to.equal(
-        "lorem\nipsum\ndolor\nsit\n" + res._allMessages[4]
-      );
+      expect(res.err()).to.equal("dolor\n" + errMessages[1]);
+      expect(res.all()).to.equal("lorem\nipsum\ndolor\nsit\n" + allMessages[4]);
     }
   });
 });

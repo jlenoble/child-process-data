@@ -21,6 +21,18 @@ export default class MessageAggregator {
     return this._allMessages.join("");
   }
 
+  public outMessages(): string[] {
+    return this._outMessages.concat();
+  }
+
+  public errMessages(): string[] {
+    return this._errMessages.concat();
+  }
+
+  public allMessages(): string[] {
+    return this._allMessages.concat();
+  }
+
   public outPush(str: string): void {
     this._outMessages.push(str);
   }
