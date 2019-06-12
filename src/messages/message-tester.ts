@@ -18,7 +18,7 @@ export default class MessageTester extends MessageAggregator {
   public testUpTo(
     fn: TestFunction | TestFunction[],
     _msg: string | RegExp,
-    options: { included?: boolean }
+    options: { included?: boolean } = { included: false }
   ): boolean {
     return this.multiTestUpTo(Array.isArray(fn) ? fn : [fn], _msg, options);
   }
@@ -26,7 +26,7 @@ export default class MessageTester extends MessageAggregator {
   public multiTestUpTo(
     fns: TestFunction[],
     _msg: string | RegExp,
-    { included = false } = {}
+    { included = false }: { included?: boolean } = { included: false }
   ): boolean {
     const pattern =
       _msg instanceof RegExp
