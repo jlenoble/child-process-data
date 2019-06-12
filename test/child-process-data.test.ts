@@ -1,14 +1,15 @@
 import childProcessData from "../src/index";
+import Result from "../src/messages/result";
 import { spawn } from "child_process";
 import { expect } from "chai";
 import deepKill from "deepkill";
 
 describe("Testing childProcessData", (): void => {
-  const echo = (text: string): Promise<any> => {
+  const echo = (text: string): Promise<Result> => {
     return childProcessData(spawn("echo", [text]));
   };
 
-  const gulpTest = (gulpfile: string): Promise<any> => {
+  const gulpTest = (gulpfile: string): Promise<Result> => {
     return childProcessData(
       spawn("gulp", ["--gulpfile", `build/${gulpfile}`, "subtest"])
     );
@@ -31,88 +32,117 @@ describe("Testing childProcessData", (): void => {
     ]);
   });
 
-  it(`childProcessData can capture continuous outputs`, function(): Promise<
-    any
+  it(`childProcessData can capture continuous outputs`, async function(): Promise<
+    void
   > {
     this.timeout(3000); // eslint-disable-line no-invalid-this
+    let res: Result;
 
-    return gulpTest("gulpfile_gutil.log.js").then(
-      (res): Promise<void> => {
-        const all = res.all();
-        expect(all).to.match(
-          /Working directory changed to.*child-process-data/
-        );
-        expect(all).to.match(/Using gulpfile.*child-process-data.*gutil\.log/);
-        expect(all).to.match(/Starting 'subtest'/);
-        expect(all).to.match(/Test message \d: Hello!/);
-        expect(all).to.match(/Finished 'subtest' after (\d+\.?\d*) m?s/);
-        return deepKill(res.childProcess.pid);
-      }
-    );
+    try {
+      res = await gulpTest("gulpfile_gutil.log.js");
+    } catch (e) {
+      return deepKill(e.result.pid);
+    }
+
+    try {
+      const all = res.all();
+
+      expect(all).to.match(/Working directory changed to.*child-process-data/);
+      expect(all).to.match(/Using gulpfile.*child-process-data.*gutil\.log/);
+      expect(all).to.match(/Starting 'subtest'/);
+      expect(all).to.match(/Test message \d: Hello!/);
+      expect(all).to.match(/Finished 'subtest' after (\d+\.?\d*) m?s/);
+    } catch (e) {
+      return deepKill(res.pid).then(
+        (): void => {
+          throw e;
+        }
+      );
+    }
+
+    return deepKill(res.pid);
   });
 
-  it(`childProcessData can capture continuous outputs - special`, function(): Promise<
+  it(`childProcessData can capture continuous outputs - special`, async function(): Promise<
+    void
+  > {
+    this.timeout(3000); // eslint-disable-line no-invalid-this
+    let res: Result;
+
+    try {
+      res = await gulpTest("gulpfile_gutil.log-special.js");
+    } catch (e) {
+      return deepKill(e.result.pid);
+    }
+
+    try {
+      const all = res.all();
+
+      expect(all).to.match(/Working directory changed to.*child-process-data/);
+      expect(all).to.match(/Using gulpfile.*child-process-data.*gutil\.log/);
+      expect(all).to.match(/Starting 'subtest'/);
+      expect(all).to.match(/Starting 'sub:te_st-tdd:transpile:all'/);
+      expect(all).to.match(/Test message \d: Hello!/);
+      expect(all).to.match(
+        /Finished 'sub:te_st-tdd:transpile:all' after (\d+\.?\d*) m?s/
+      );
+      expect(all).to.match(/Finished 'subtest' after (\d+\.?\d*) m?s/);
+    } catch (e) {
+      return deepKill(res.pid).then(
+        (): void => {
+          throw e;
+        }
+      );
+    }
+
+    return deepKill(res.pid);
+  });
+
+  it(`childProcessData can capture uncaught errors`, async function(): Promise<
     void
   > {
     this.timeout(3000); // eslint-disable-line no-invalid-this
 
-    return gulpTest("gulpfile_gutil.log-special.js").then(
-      (res): Promise<void> => {
-        const all = res.all();
-        expect(all).to.match(
-          /Working directory changed to.*child-process-data/
-        );
-        expect(all).to.match(/Using gulpfile.*child-process-data.*gutil\.log/);
-        expect(all).to.match(/Starting 'subtest'/);
-        expect(all).to.match(/Starting 'sub:te_st-tdd:transpile:all'/);
-        expect(all).to.match(/Test message \d: Hello!/);
-        expect(all).to.match(
-          /Finished 'sub:te_st-tdd:transpile:all' after (\d+\.?\d*) m?s/
-        );
-        expect(all).to.match(/Finished 'subtest' after (\d+\.?\d*) m?s/);
-        return deepKill(res.childProcess.pid);
-      }
-    );
+    try {
+      await gulpTest("gulpfile_gulp-error.js");
+    } catch (e) {
+      const err = e.message;
+      const all = e.result.all();
+      console.log(err);
+      expect(err).to.match(/child process stream closed with code 1/);
+      expect(all).to.match(/Working directory changed to.*child-process-data/);
+      expect(all).to.match(/Using gulpfile.*child-process-data.*gulp-error/);
+      expect(all).to.match(/Starting 'subtest'/);
+      expect(all).to.match(/Error in plugin 'gulp-error'/);
+      expect(all).to.match(
+        /Intentional error when processing.*child-process-data/
+      );
+      return;
+    }
+
+    throw new Error("No uncaught error were captured");
   });
 
-  it(`childProcessData can capture uncaught errors`, function(): Promise<void> {
+  it(`childProcessData can capture caught errors`, async function(): Promise<
+    void
+  > {
     this.timeout(3000); // eslint-disable-line no-invalid-this
+    let res: Result;
 
-    return gulpTest("gulpfile_gulp-error.js").catch(
-      (_err): void => {
-        const err = _err.message;
-        const all = _err.result.all();
-        console.log(err);
-        expect(err).to.match(/child process stream closed with code 1/);
-        expect(all).to.match(
-          /Working directory changed to.*child-process-data/
-        );
-        expect(all).to.match(/Using gulpfile.*child-process-data.*gulp-error/);
-        expect(all).to.match(/Starting 'subtest'/);
-        expect(all).to.match(/Error in plugin 'gulp-error'/);
-        expect(all).to.match(
-          /Intentional error when processing.*child-process-data/
-        );
-      }
+    try {
+      res = await gulpTest("gulpfile_gulp-error_plumber.js");
+    } catch (e) {
+      throw new Error("No caught error were captured");
+    }
+
+    const all = res.all();
+
+    expect(all).to.match(/Working directory changed to.*child-process-data/);
+    expect(all).to.match(/Using gulpfile.*child-process-data.*plumber/);
+    expect(all).to.match(/Starting 'subtest'/);
+    expect(all).to.match(
+      /Intentional error when processing.*child-process-data/
     );
-  });
-
-  it(`childProcessData can capture caught errors`, function(): Promise<void> {
-    this.timeout(3000); // eslint-disable-line no-invalid-this
-
-    return gulpTest("gulpfile_gulp-error_plumber.js").then(
-      (_res): void => {
-        const res = _res.all();
-        expect(res).to.match(
-          /Working directory changed to.*child-process-data/
-        );
-        expect(res).to.match(/Using gulpfile.*child-process-data.*plumber/);
-        expect(res).to.match(/Starting 'subtest'/);
-        expect(res).to.match(
-          /Intentional error when processing.*child-process-data/
-        );
-        expect(res).to.match(/Finished 'subtest' after/);
-      }
-    );
+    expect(all).to.match(/Finished 'subtest' after/);
   });
 });
