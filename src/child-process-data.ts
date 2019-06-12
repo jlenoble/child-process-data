@@ -3,7 +3,7 @@ import { Pool, Executor } from "promise-plumber";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
 import Result from "./messages/result";
 import checkChildProcess from "./check-child-process";
-import NormalizedOptions, { Options } from "./normalize-options";
+import MainOptions, { Options } from "./options";
 
 export class ErrorWithHistory extends Error {
   public readonly result: Result;
@@ -32,7 +32,7 @@ export class ChildProcessData extends Pool<Result> {
   // @ts-ignore
   protected readonly _childProcess: ChildProcessWithReadableStdStreams;
   // @ts-ignore
-  protected readonly _options: NormalizedOptions;
+  protected readonly _options: MainOptions;
   // @ts-ignore
   protected readonly _result: Result;
 
@@ -60,7 +60,7 @@ export class ChildProcessData extends Pool<Result> {
       // Add this._result to objects returned on resolution
       this.add(this._result);
 
-      this._options = new NormalizedOptions(options, this._result);
+      this._options = new MainOptions(options, this._result);
 
       this._options.aggregator.then(
         this.resolve.bind(this),

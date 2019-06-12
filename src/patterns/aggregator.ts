@@ -1,12 +1,12 @@
 import { Executor, Sink } from "promise-plumber";
 import Handler, { DataCallbacks } from "./handler";
 import GulpHandler from "./gulp-handler";
-import NormalizedOptions from "../normalize-options";
+import MainOptions from "../options";
 
 export default class HandlerAggregator extends Sink<Handler> {
   protected _handlers: Set<Handler>;
 
-  public constructor(options: NormalizedOptions | Executor<Handler[]>) {
+  public constructor(options: MainOptions | Executor<Handler[]>) {
     if (typeof options === "function") {
       super(options);
       this._handlers = new Set();

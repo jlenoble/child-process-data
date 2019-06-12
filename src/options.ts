@@ -24,7 +24,7 @@ export interface NormalizedOptions extends Options {
   dataCallbacks: DataCallbacks;
 }
 
-export default class GlobalOptions {
+export default class MainOptions {
   public readonly format: string;
   public readonly silent: boolean;
   public readonly startDelay: TimingOutTrigger<number>;
