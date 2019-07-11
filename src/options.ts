@@ -18,9 +18,7 @@ export interface NormalizedOptions extends Options {
   format: string;
   silent: boolean;
   startDelay: number;
-  listenTime: number;
   endDelay: number;
-  dontBlock: boolean;
   dataCallbacks: DataCallbacks;
 }
 
@@ -42,18 +40,11 @@ export default class MainOptions {
         format: "utf-8",
         silent: false,
         startDelay: 0,
-        listenTime: 30000,
         endDelay: 60000,
-        dontBlock: false,
         dataCallbacks: {}
       },
       opts
     );
-
-    if (options.dontBlock) {
-      options.startDelay === -1 && (options.startDelay = 1);
-      options.endDelay === -1 && (options.endDelay = 1);
-    }
 
     this.format = options.format;
     this.silent = options.silent;
