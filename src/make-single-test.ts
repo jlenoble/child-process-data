@@ -1,92 +1,115 @@
-import { spawn } from "child_process";
+import { spawn, SpawnOptionsWithoutStdio, SpawnOptions } from "child_process";
 import childProcessData from "./child-process-data";
+import { ChildProcessWithReadableStdStreams } from "./child-process";
+import Result from "./messages/result";
+import deepKill from "deepkill";
 
-export function makeSingleTest(options) {
-  // Single test steps are immutable, but they don't need to be overridden,
-  // except for checkResults (of course!), as they all return a sensible promise
-  const opts = Object.assign(
-    {
-      childProcess: null,
+type SpawnArguments =
+  | [string]
+  | [string, SpawnOptionsWithoutStdio | SpawnOptions]
+  | [string, string[]]
+  | [string, string[], SpawnOptionsWithoutStdio | SpawnOptions];
 
-      setupTest() {
-        return Promise.resolve();
-      },
+interface Options {
+  debug?: boolean;
+  childProcess: SpawnArguments;
 
-      onSetupError(err) {
-        return Promise.reject(err);
-      },
+  setupTest?: () => void | Promise<void>;
+  checkResults: (results: Result) => void | Promise<void>;
+  tearDownTest?: () => void | Promise<void>;
+}
 
-      spawnTest() {
-        if (Array.isArray(this.childProcess)) {
-          this.childProcess = spawn(...this.childProcess);
-        }
-        return childProcessData(this.childProcess);
-      },
+class SingleTest {
+  protected _childProcess: ChildProcessWithReadableStdStreams | null = null;
+  protected _debug: boolean;
+  protected _options: Options;
+  protected _results: Result | null = null;
 
-      onSpawnError(err) {
-        return Promise.reject(err);
-      },
+  public constructor(options: Options) {
+    this._debug = !!options.debug;
 
-      checkResults(results) {
-        throw new Error("checkResults callback must be overridden");
-      },
+    this._options = { ...options };
 
-      onCheckResultsError(err) {
-        return Promise.reject(err);
-      },
+    if (options.checkResults) {
+      // Don't pass directly user check function
+      const checkResults = this._options.checkResults;
 
-      tearDownTest(results) {
-        return Promise.resolve();
-      },
-
-      onTearDownError(err) {
-        return Promise.reject(err);
-      },
-
-      onSuccess() {
-        return Promise.resolve();
-      }
-    },
-    options
-  );
-
-  // Display (or not) debug messages at each testing step
-  if (opts.debug) {
-    opts.debug = {};
-    Object.keys(opts).forEach(key => {
-      if (typeof opts[key] === "function") {
-        opts.debug[key] = opts[key];
-        opts[key] = function(...args) {
-          console.log("[makeSingleTest]", key);
-          return this.debug[key].call(this, ...args);
-        };
-      }
-    });
+      // Instead wrap it to handle ongoing child process
+      this._options.checkResults = (results: Result): void | Promise<void> => {
+        return checkResults.call(this, results || this._results);
+      };
+    }
   }
 
-  // Don't pass directly user check function
-  const checkResults = opts.checkResults;
+  public async setupTest(): Promise<void> {
+    if (this._debug) {
+      console.log("[makeSingleTest] setupTest");
+    }
+    if (this._options.setupTest) {
+      return this._options.setupTest();
+    }
+  }
 
-  // Instead wrap it to handle ongoing child process
-  opts.checkResults = function(results) {
-    return checkResults.call(this, results || this.results);
+  public async spawnTest(): Promise<void> {
+    if (this._debug) {
+      console.log("[makeSingleTest] spawnTest");
+    }
+
+    if (Array.isArray(this._options.childProcess)) {
+      // @ts-ignore
+      this._childProcess = spawn(...this._options.childProcess);
+    }
+
+    // @ts-ignore
+    this._results = await childProcessData(this._childProcess);
+  }
+
+  public async checkResults(): Promise<void> {
+    if (this._debug) {
+      console.log("[makeSingleTest] checkResults");
+    }
+    if (this._options.checkResults) {
+      if (this._results) {
+        return this._options.checkResults(this._results);
+      }
+    } else {
+      throw new Error("checkResults callback must be overridden");
+    }
+  }
+
+  public async tearDownTest(): Promise<void> {
+    if (this._debug) {
+      console.log("[makeSingleTest] tearDownTest");
+    }
+
+    if (this._childProcess) {
+      await deepKill(this._childProcess.pid);
+    }
+
+    if (this._options.tearDownTest) {
+      await this._options.tearDownTest();
+    }
+  }
+}
+
+export function makeSingleTest(
+  options: Options = {
+    // @ts-ignore
+    childProcess: null
+  }
+): () => Promise<void> {
+  return async function(): Promise<void> {
+    const singleTest = new SingleTest(options);
+
+    try {
+      await singleTest.setupTest();
+      await singleTest.spawnTest();
+      await singleTest.checkResults();
+    } catch (err) {
+      await singleTest.tearDownTest();
+      throw err;
+    }
+
+    await singleTest.tearDownTest();
   };
-
-  // Generate single test function
-  return (function(options) {
-    return function() {
-      return options
-        .setupTest()
-        .then(() => options.spawnTest(), err => options.onSetupError(err))
-        .then(
-          results => options.checkResults(results),
-          err => options.onSpawnError(err)
-        )
-        .then(
-          results => options.tearDownTest(results),
-          err => options.onCheckResultsError(err)
-        )
-        .then(() => options.onSuccess(), err => options.onTearDownError(err));
-    };
-  })(opts);
 }
