@@ -10,7 +10,7 @@ type SpawnArguments =
   | [string, string[]]
   | [string, string[], SpawnOptionsWithoutStdio | SpawnOptions];
 
-interface Options {
+export interface Options {
   debug?: boolean;
   childProcess: SpawnArguments;
 
@@ -19,7 +19,7 @@ interface Options {
   tearDownTest?: () => void | Promise<void>;
 }
 
-class SingleTest {
+export class SingleTest {
   protected _childProcess: ChildProcessWithReadableStdStreams | null = null;
   protected _debug: boolean;
   protected _options: Options;
