@@ -90,13 +90,17 @@ export class ChildProcessData extends Pool<Result> {
   }
 
   public resolve(): void {
-    this._options.collapseDelays();
+    if (this._options) {
+      this._options.collapseDelays();
+    }
     super.resolve();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public reject(reason?: any): void {
-    this._options.collapseDelays();
+    if (this._options) {
+      this._options.collapseDelays();
+    }
     super.reject(reason);
   }
 }
