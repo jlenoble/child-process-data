@@ -3,6 +3,26 @@ import MessageAggregator from "./message-aggregator";
 export type TestFunction = (msg: string) => boolean;
 
 export default class MessageTester extends MessageAggregator {
+  public includes(msg: string): boolean {
+    return this.all().includes(msg);
+  }
+
+  public includesUpTo(
+    msg: string,
+    _msg: string | RegExp,
+    { included = false }: { included?: boolean } = { included: false }
+  ): boolean {
+    const parts = this.all().split(_msg);
+
+    if (parts.length < 2) {
+      return false;
+    }
+
+    const [str] = parts;
+
+    return (str + (included ? _msg : "")).includes(msg);
+  }
+
   public test(fn: TestFunction | TestFunction[]): boolean {
     return this.multiTest(Array.isArray(fn) ? fn : [fn]);
   }

@@ -11,6 +11,77 @@ describe("Testing childProcessData", (): void => {
     return childProcessData(spawn("node", args));
   };
 
+  it(`childProcessData can check for strings`, (): Promise<[void, void]> => {
+    return Promise.all([
+      echo("Little silly message").then((res): void => {
+        expect(res.includes("silly")).to.be.true;
+        expect(res.includes("Little silly message\n")).to.be.true;
+      }),
+      echo("Another little silly message").then((res): void => {
+        expect(res.includes("silly")).to.be.true;
+        expect(res.includes("Another little silly message")).to.be.true;
+      })
+    ]);
+  });
+
+  it(`childProcessData can check for strings up to a point`, (): Promise<
+    [void, void]
+  > => {
+    return Promise.all([
+      echo("Little silly message").then((res): void => {
+        expect(res.includesUpTo("silly", "mess")).to.be.true;
+        expect(res.includesUpTo("Li", /ttle/)).to.be.true;
+        expect(res.includesUpTo("sage", "ttle")).to.be.false;
+      }),
+      echo("Another little silly message").then((res): void => {
+        expect(res.includesUpTo("silly", "mess")).to.be.true;
+        expect(res.includesUpTo("Li", /t.le/)).to.be.false;
+        expect(res.includesUpTo("sage", "ttle")).to.be.false;
+      })
+    ]);
+  });
+
+  it(`childProcessData can check for strings up to a point, included`, (): Promise<
+    [void, void]
+  > => {
+    return Promise.all([
+      echo("Little silly message").then((res): void => {
+        expect(res.includesUpTo("silly mess", "mess", { included: true })).to.be
+          .true;
+        expect(res.includesUpTo("Little", "ttle", { included: true })).to.be
+          .true;
+        expect(res.includesUpTo("sage", "ttle", { included: true })).to.be
+          .false;
+      }),
+      echo("Another little silly message").then((res): void => {
+        expect(res.includesUpTo("silly me", "mess", { included: true })).to.be
+          .true;
+        expect(res.includesUpTo("Little", "ttle", { included: true })).to.be
+          .false;
+        expect(res.includesUpTo("sage", "ttle", { included: true })).to.be
+          .false;
+      })
+    ]);
+  });
+
+  it(`childProcessData can test buffered messages`, (): Promise<
+    [void, void]
+  > => {
+    return Promise.all([
+      echo("Little silly message").then((res): void => {
+        expect(res.all()).to.equal("Little silly message\n");
+        expect(res.test((msg): boolean => msg === "Little silly message\n")).to
+          .be.true;
+      }),
+      echo("Another little silly message").then((res): void => {
+        expect(res.all()).to.equal("Another little silly message\n");
+        expect(
+          res.test((msg): boolean => msg === "Another little silly message\n")
+        ).to.be.true;
+      })
+    ]);
+  });
+
   it(`childProcessData can test buffered messages`, (): Promise<
     [void, void]
   > => {
