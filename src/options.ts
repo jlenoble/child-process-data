@@ -8,9 +8,7 @@ export interface Options {
   format?: string;
   silent?: boolean;
   startDelay?: number;
-  listenTime?: number;
   endDelay?: number;
-  dontBlock?: boolean;
   dataCallbacks?: DataCallbacks;
 }
 
