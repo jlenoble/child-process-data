@@ -12,10 +12,10 @@ type SpawnArguments =
 
 export interface Options {
   debug?: boolean;
-  childProcess: SpawnArguments;
+  childProcess?: SpawnArguments;
 
   setupTest?: () => void | Promise<void>;
-  checkResults: (results: Result) => void | Promise<void>;
+  checkResults?: (results: Result) => void | Promise<void>;
   tearDownTest?: () => void | Promise<void>;
 }
 
@@ -32,7 +32,7 @@ export class SingleTest {
 
     if (options.checkResults) {
       // Don't pass directly user check function
-      const checkResults = this._options.checkResults;
+      const checkResults = options.checkResults;
 
       // Instead wrap it to handle ongoing child process
       this._options.checkResults = (results: Result): void | Promise<void> => {
