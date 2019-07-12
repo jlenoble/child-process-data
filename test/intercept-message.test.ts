@@ -65,9 +65,9 @@ describe("Testing interceptMessage & interceptMessage", function(): void {
     const p = spawn("node", ["./test/examples/normal-exit.js"]);
 
     const found = Promise.all([
-      interceptMessage(p, "ipsum", { endDelay: 1000 }),
-      interceptMessage(p, "sit", { endDelay: 500 }),
-      interceptMessage(p, "amet", { endDelay: 0 })
+      interceptMessage(p, "ipsum", { timeout: 1000 }),
+      interceptMessage(p, "sit", { timeout: 500 }),
+      interceptMessage(p, "amet", { timeout: 0 })
     ]);
 
     expect(await found).to.be.eql([true, true, false]);

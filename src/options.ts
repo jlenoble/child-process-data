@@ -7,16 +7,14 @@ import { collapsibleDelays, TimingOutTrigger } from "promise-plumber";
 export interface Options {
   format?: string;
   silent?: boolean;
-  startDelay?: number;
-  endDelay?: number;
+  timeout?: number;
   dataCallbacks?: DataCallbacks;
 }
 
 export interface NormalizedOptions extends Options {
   format: string;
   silent: boolean;
-  startDelay: number;
-  endDelay: number;
+  timeout: number;
   dataCallbacks: DataCallbacks;
 }
 
@@ -37,8 +35,7 @@ export default class MainOptions {
       {
         format: "utf-8",
         silent: false,
-        startDelay: 0,
-        endDelay: 60000,
+        timeout: 60000,
         dataCallbacks: {}
       },
       opts
@@ -47,10 +44,7 @@ export default class MainOptions {
     this.format = options.format;
     this.silent = options.silent;
 
-    const delays = collapsibleDelays<number>([
-      options.startDelay,
-      options.endDelay
-    ]);
+    const delays = collapsibleDelays<number>([0, options.timeout]);
 
     this.startDelay = delays[0];
     this.endDelay = delays[1];
