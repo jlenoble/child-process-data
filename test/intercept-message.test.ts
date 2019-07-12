@@ -67,9 +67,10 @@ describe("Testing interceptMessage & interceptMessage", function(): void {
     const found = Promise.all([
       interceptMessage(p, "ipsum", { timeout: 1000 }),
       interceptMessage(p, "sit", { timeout: 500 }),
-      interceptMessage(p, "amet", { timeout: 0 })
+      interceptMessage(p, "amet", { timeout: 0 }),
+      interceptMessage(p, "amet")
     ]);
 
-    expect(await found).to.be.eql([true, true, false]);
+    expect(await found).to.be.eql([true, true, false, true]);
   });
 });
