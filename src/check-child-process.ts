@@ -13,7 +13,7 @@ export default function checkChildProcess(
   // At the minimum for childProcessData to work, childProcess must be an actual
   // ChildProcess and stdout and stderr must exist on it
   if (!(childProcess instanceof ChildProcessClass)) {
-    throw new TypeError("Not a ChildProcess instance " + childProcess);
+    throw new TypeError("Not a ChildProcess instance: " + childProcess);
   }
 
   if (!childProcess.stdout) {
