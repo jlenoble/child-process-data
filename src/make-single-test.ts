@@ -12,6 +12,7 @@ type SpawnArguments =
 
 export interface Options {
   debug?: boolean;
+  silent?: boolean;
   childProcess?: SpawnArguments;
 
   setupTest?: () => void | Promise<void>;
@@ -22,11 +23,13 @@ export interface Options {
 export class SingleTest {
   protected _childProcess: ChildProcessWithReadableStdStreams | null = null;
   protected _debug: boolean;
+  protected _silent: boolean;
   protected _options: Options;
   protected _results: Result | null = null;
 
   public constructor(options: Options) {
     this._debug = !!options.debug;
+    this._silent = !!options.silent;
 
     this._options = { ...options };
 
@@ -61,7 +64,9 @@ export class SingleTest {
     }
 
     // @ts-ignore
-    this._results = await childProcessData(this._childProcess);
+    this._results = await childProcessData(this._childProcess, {
+      silent: this._silent
+    });
   }
 
   public async checkResults(): Promise<void> {

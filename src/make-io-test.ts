@@ -113,7 +113,9 @@ class IOTest extends SingleTest {
     }
 
     if (this._childProcess) {
-      this._results = new ChildProcessData(this._childProcess).results;
+      this._results = new ChildProcessData(this._childProcess, {
+        silent: this._silent
+      }).results;
     }
   }
 
