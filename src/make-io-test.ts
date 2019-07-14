@@ -1,212 +1,241 @@
-import { spawn } from "child_process";
-import { expect } from "chai";
-import childProcessData from "./child-process-data";
-import { makeSingleTest } from "./make-single-test";
-import deepKill from "deepkill";
+import { spawn, SpawnOptionsWithoutStdio } from "child_process";
+import { ChildProcessData } from "./child-process-data";
+import { SingleTest, Options as SingleOptions } from "./make-single-test";
+import { waitUntil } from "promise-plumber";
 
-export function makeIOTest(options) {
-  const opts = Object.assign(
-    {
-      childProcessFile: null,
-      childProcessOptions: [],
-      waitForReady: 300,
-      waitForAnswer: 50,
+interface Message {
+  i?: string;
+  o?: string;
+  e?: string;
+  io?: [string, string];
+  ie?: [string, string];
+}
 
-      checkStdio() {
-        // IO streams must be piped!
-        if (this.childProcess.stdin === null) {
-          throw new ReferenceError("Parent/child stdins not piped");
-        }
+interface Options extends SingleOptions {
+  childProcessFile?: string;
+  childProcessOptions?: string[];
+  timeout?: number;
+  waitForAnswer?: number;
+  messages?: Message[];
+}
 
-        if (this.childProcess.stdout === null) {
-          throw new ReferenceError("Parent/child stdouts not piped");
-        }
+class IOTest extends SingleTest {
+  protected _childProcessFile: string;
+  protected _childProcessOptions: string[];
+  protected _timeout: number;
+  protected _waitForAnswer: number;
+  protected _messages: Message[];
 
-        if (this.childProcess.stderr === null) {
-          throw new ReferenceError("Parent/child stderrs not piped");
-        }
-      },
+  public constructor(options: Options) {
+    super(options);
 
-      spawnTest() {
-        if (!this.childProcessFile) {
-          throw new ReferenceError(
-            "childProcessFile should be defined; will be passed to node"
-          );
-        }
+    this._childProcessFile = options.childProcessFile || "";
+    this._childProcessOptions = options.childProcessOptions || [];
+    this._timeout = options.timeout || 60000;
+    this._waitForAnswer = options.waitForAnswer || 50;
+    this._messages = options.messages || [];
+  }
 
-        if (!Array.isArray(this.childProcessOptions)) {
-          if (typeof this.childProcessOptions !== "string") {
-            throw new TypeError(
-              "Bad childProcessOptions; must be string or array of strings"
-            );
-          }
+  public checkStdio(): void {
+    if (!this._childProcess) {
+      return;
+    }
 
-          this.childProcessOptions = [this.childProcessOptions];
-        }
+    // IO streams must be piped!
+    if (this._childProcess.stdin === null) {
+      throw new ReferenceError("Parent/child stdins not piped");
+    }
 
-        const p = spawn(
-          "node",
-          [this.childProcessFile, ...this.childProcessOptions],
-          { stdio: "pipe" }
-        );
+    if (this._childProcess.stdout === null) {
+      throw new ReferenceError("Parent/child stdouts not piped");
+    }
 
-        this.childProcess = p;
+    if (this._childProcess.stderr === null) {
+      throw new ReferenceError("Parent/child stderrs not piped");
+    }
+  }
 
-        // Ignore the returned promise, it will never be resolved.
-        // The child process will continue running until this process exits.
-        // But the promise has a prop results that is the object that should
-        // be returned, would the childProcess close.
-        this.results = childProcessData(p).results;
-      },
+  public async spawnTest(): Promise<void> {
+    if (this._debug) {
+      console.log("[makeSingleTest] spawnTest");
+    }
 
-      tearDownTest() {
-        if (this.childProcess.stdin) {
-          // May not have been opened in parent
-          this.childProcess.stdin.pause();
-        }
-        deepKill(this.childProcess.pid);
-        return Promise.resolve();
-      },
-
-      onTearDownError(err) {
-        // Last attempt at cleaning up: all errors pass through this last method
-        if (this.childProcess) {
-          if (this.childProcess.stdin) {
-            // May not have been opened in parent
-            this.childProcess.stdin.pause();
-          }
-          deepKill(this.childProcess.pid);
-        }
-        return Promise.reject(err);
-      }
-    },
-    options
-  );
-
-  if (opts.childProcess) {
-    // Override default spawnTest function but check if child has proper piping
-    opts.spawnTest = function() {
-      if (Array.isArray(this.childProcess)) {
-        [cmd, args, _options] = this.childProcess;
+    if (this._options.childProcess) {
+      if (Array.isArray(this._options.childProcess)) {
+        const [cmd, args, _options] = this._options.childProcess as [
+          string,
+          string[],
+          SpawnOptionsWithoutStdio
+        ];
 
         if (_options && _options.stdio) {
-          if (_options.stdio !== "pipe" && Array.isArray(_options.stdio)) {
-            if (!_options.stdio.every(opt => opt === "pipe")) {
+          const stdio = _options.stdio;
+
+          if (stdio !== "pipe" && Array.isArray(stdio)) {
+            if (!(stdio as string[]).every((opt): boolean => opt === "pipe")) {
               throw new Error("Bad stdio option, must be 'pipe'");
             }
           }
         }
 
-        this.childProcess = spawn(cmd, args, _options || { stdio: "pipe" });
+        this._childProcess = spawn(
+          cmd,
+          args as string[],
+          (_options as SpawnOptionsWithoutStdio) || { stdio: "pipe" }
+        );
       }
 
       this.checkStdio();
+    } else {
+      if (!this._childProcessFile) {
+        throw new ReferenceError(
+          "childProcessFile should be defined; will be passed to node"
+        );
+      }
 
-      // Ignore the returned promise, it will never be resolved.
-      // The child process will continue running until this process exits.
-      // But the promise has a prop results that is the object that should
-      // be returned, would the childProcess close.
-      this.results = childProcessData(this.childProcess).results;
-    };
-  }
+      if (!Array.isArray(this._childProcessOptions)) {
+        if (typeof this._childProcessOptions !== "string") {
+          throw new TypeError(
+            "Bad childProcessOptions; must be string or array of strings"
+          );
+        }
 
-  if (opts.messages) {
-    opts.checkResults = function(results) {
-      const outs = [];
-      const errs = [];
-      const stdin = this.childProcess.stdin;
+        this._childProcessOptions = [this._childProcessOptions];
+      }
 
-      const check = () => {
-        expect(results._outMessages.join("")).to.equal(outs.join(""));
-        expect(results._errMessages.join("")).to.equal(errs.join(""));
-      };
-
-      return (
-        new Promise(resolve => {
-          // Waiting for child to be online
-          setTimeout(resolve, this.waitForReady);
-        })
-
-          // Having a conversation
-          .then(
-            () =>
-              new Promise((resolve, reject) => {
-                let i = 0;
-
-                const intervalId = setInterval(() => {
-                  try {
-                    if (i >= opts.messages.length) {
-                      clearInterval(intervalId);
-                      return resolve();
-                    }
-
-                    const msg = opts.messages[i];
-                    const [scheme] = Object.keys(msg);
-                    let inMsg;
-                    let outMsg;
-
-                    if (i > 0) {
-                      check();
-                    }
-
-                    switch (scheme) {
-                      case "i":
-                        inMsg = msg[scheme];
-                        stdin.write(inMsg + "\r");
-                        break;
-
-                      case "o":
-                        outMsg = msg[scheme];
-                        outs.push(outMsg);
-                        break;
-
-                      case "e":
-                        outMsg = msg[scheme];
-                        errs.push(outMsg);
-                        break;
-
-                      case "io":
-                        [inMsg, outMsg] = msg[scheme];
-                        stdin.write(inMsg + "\r");
-                        outs.push(outMsg);
-                        break;
-
-                      case "ie":
-                        [inMsg, outMsg] = msg[scheme];
-                        stdin.write(inMsg + "\r");
-                        errs.push(outMsg);
-                        break;
-
-                      default:
-                        throw new Error("Unsupported IO scheme: " + scheme);
-                    }
-                  } catch (err) {
-                    clearInterval(intervalId);
-                    return reject(err);
-                  }
-
-                  i++;
-                }, this.waitForAnswer);
-              })
-          )
-
-          // Test last return
-          .then(
-            () =>
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  try {
-                    check();
-                    return resolve();
-                  } catch (err) {
-                    return reject(err);
-                  }
-                }, this.waitForAnswer);
-              })
-          )
+      const p = spawn(
+        "node",
+        [this._childProcessFile, ...this._childProcessOptions],
+        { stdio: "pipe" }
       );
-    };
+
+      this._childProcess = p;
+    }
+
+    if (this._childProcess) {
+      this._results = new ChildProcessData(this._childProcess).results;
+    }
   }
 
-  return makeSingleTest(opts);
+  public async checkResults(): Promise<void> {
+    if (!this._childProcess) {
+      return;
+    }
+
+    if (this._options.checkResults) {
+      return super.checkResults();
+    }
+
+    if (this._debug) {
+      console.log("[makeSingleTest] checkResults");
+    }
+
+    const stdin = this._childProcess.stdin;
+
+    if (!stdin) {
+      return;
+    }
+
+    let inMsg = "";
+    let outMsg = "";
+
+    const handleMessage = (msg: Message): void => {
+      const [scheme] = Object.keys(msg);
+
+      switch (scheme) {
+        case "i":
+          inMsg = msg[scheme] as string;
+          stdin.write(inMsg + "\r");
+          break;
+
+        case "o":
+          outMsg = msg[scheme] as string;
+          break;
+
+        case "e":
+          outMsg = msg[scheme] as string;
+          break;
+
+        case "io":
+          [inMsg, outMsg] = msg[scheme] as [string, string];
+          stdin.write(inMsg + "\r");
+          break;
+
+        case "ie":
+          [inMsg, outMsg] = msg[scheme] as [string, string];
+          stdin.write(inMsg + "\r");
+          break;
+
+        default:
+          throw new Error("Unsupported IO scheme: " + scheme);
+      }
+    };
+
+    const iter = this._messages[Symbol.iterator]();
+    let value: Message;
+    let done: boolean;
+    const start = Date.now();
+
+    await waitUntil((): boolean => {
+      if (!value) {
+        const nx = iter.next();
+        value = nx.value;
+        done = nx.done;
+        handleMessage(value);
+      }
+
+      if (!this._results) {
+        return true;
+      }
+
+      if (Date.now() - this._timeout > start) {
+        throw new Error(
+          `[Timeout] Could not intercept ${JSON.stringify(outMsg)}`
+        );
+      }
+
+      if (this._results.includes(outMsg)) {
+        this._results.forgetUpTo(outMsg, { included: true });
+        const nx = iter.next();
+        value = nx.value;
+        done = nx.done;
+
+        if (!done) {
+          handleMessage(value);
+        }
+      }
+
+      return done;
+    }, this._waitForAnswer);
+  }
+
+  public async tearDownTest(): Promise<void> {
+    if (this._childProcess && this._childProcess.stdin) {
+      // @ts-ignore May not have been opened in parent
+      this._childProcess.stdin.pause();
+    }
+    return super.tearDownTest();
+  }
+}
+
+export function makeIOTest(
+  options: Options = {
+    // @ts-ignore
+    childProcess: null
+  }
+): () => Promise<void> {
+  return async function(): Promise<void> {
+    const ioTest = new IOTest(options);
+
+    try {
+      await ioTest.setupTest();
+      await ioTest.spawnTest();
+      await ioTest.checkResults();
+    } catch (err) {
+      await ioTest.tearDownTest();
+      throw err;
+    }
+
+    await ioTest.tearDownTest();
+  };
 }
