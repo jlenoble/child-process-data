@@ -11,7 +11,7 @@
   "files": [
     "lib"
   ],
-  "types": "lib/child-process-data.d.ts",
+  "types": "lib/index.d.ts",
   "bugs": {
     "url": "https://github.com/jlenoble/child-process-data/issues",
     "email": ""
