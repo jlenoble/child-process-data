@@ -11,8 +11,12 @@ export class ErrorWithHistory extends Error {
   public constructor(code: number, result: Result) {
     const [message, ...stack] = stripAnsi(result.err()).split("\n");
 
-    super(`${message}
+    if (code) {
+      super(`${message}
 child process stream closed with code ${code}`);
+    } else {
+      super(message);
+    }
 
     this.stack = stack.join("\n");
     this.result = result;
