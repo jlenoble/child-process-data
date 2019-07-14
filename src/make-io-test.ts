@@ -1,6 +1,6 @@
 import { spawn, SpawnOptionsWithoutStdio } from "child_process";
 import { ChildProcessData } from "./child-process-data";
-import { SingleTest, Options as SingleOptions } from "./make-single-test";
+import { SingleTest, SingleOptions } from "./make-single-test";
 import { waitUntil } from "promise-plumber";
 
 interface Message {
@@ -11,7 +11,8 @@ interface Message {
   ie?: [string, string];
 }
 
-interface Options extends SingleOptions {
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+export interface IOOptions extends SingleOptions {
   childProcessFile?: string;
   childProcessOptions?: string[];
   timeout?: number;
@@ -19,14 +20,14 @@ interface Options extends SingleOptions {
   messages?: Message[];
 }
 
-class IOTest extends SingleTest {
+export class IOTest extends SingleTest {
   protected _childProcessFile: string;
   protected _childProcessOptions: string[];
   protected _timeout: number;
   protected _waitForAnswer: number;
   protected _messages: Message[];
 
-  public constructor(options: Options) {
+  public constructor(options: IOOptions) {
     super(options);
 
     this._childProcessFile = options.childProcessFile || "";
@@ -221,7 +222,7 @@ class IOTest extends SingleTest {
 }
 
 export function makeIOTest(
-  options: Options = {
+  options: IOOptions = {
     // @ts-ignore
     childProcess: null
   }
@@ -234,8 +235,12 @@ export function makeIOTest(
       await ioTest.spawnTest();
       await ioTest.checkResults();
     } catch (err) {
-      await ioTest.tearDownTest();
-      throw err;
+      try {
+        await ioTest.onError(err);
+      } catch (e) {
+        await ioTest.tearDownTest();
+        throw err;
+      }
     }
 
     await ioTest.tearDownTest();

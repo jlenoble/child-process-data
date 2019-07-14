@@ -1,5 +1,5 @@
 import { spawn, SpawnOptionsWithoutStdio, SpawnOptions } from "child_process";
-import childProcessData from "./child-process-data";
+import childProcessData, { ErrorWithHistory } from "./child-process-data";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
 import Result from "./messages/result";
 import deepKill from "deepkill";
@@ -10,24 +10,26 @@ type SpawnArguments =
   | [string, string[]]
   | [string, string[], SpawnOptionsWithoutStdio | SpawnOptions];
 
-export interface Options {
+export interface SingleOptions {
   debug?: boolean;
   silent?: boolean;
-  childProcess?: SpawnArguments;
+  childProcess?: SpawnArguments | ChildProcessWithReadableStdStreams;
 
   setupTest?: () => void | Promise<void>;
+  spawnTest?: () => void | Promise<void>;
   checkResults?: (results: Result) => void | Promise<void>;
   tearDownTest?: () => void | Promise<void>;
+  onError?: (err: ErrorWithHistory) => void | Promise<void>;
 }
 
 export class SingleTest {
   protected _childProcess: ChildProcessWithReadableStdStreams | null = null;
   protected _debug: boolean;
   protected _silent: boolean;
-  protected _options: Options;
+  protected _options: SingleOptions;
   protected _results: Result | null = null;
 
-  public constructor(options: Options) {
+  public constructor(options: SingleOptions) {
     this._debug = !!options.debug;
     this._silent = !!options.silent;
 
@@ -40,6 +42,24 @@ export class SingleTest {
       // Instead wrap it to handle ongoing child process
       this._options.checkResults = (results: Result): void | Promise<void> => {
         return checkResults.call(this, results || this._results);
+      };
+    }
+
+    if (options.onError) {
+      // Don't pass directly user error function
+      const onError = options.onError;
+
+      // Instead wrap it to handle ongoing child process
+      this._options.onError = (
+        err: Error | ErrorWithHistory
+      ): void | Promise<void> => {
+        if (err instanceof ErrorWithHistory) {
+          return onError.call(this, err);
+        } else if (this._results !== null) {
+          return onError.call(this, new ErrorWithHistory(0, this._results));
+        } else {
+          throw err;
+        }
       };
     }
   }
@@ -58,9 +78,15 @@ export class SingleTest {
       console.log("[makeSingleTest] spawnTest");
     }
 
+    if (this._options.spawnTest) {
+      return this._options.spawnTest();
+    }
+
     if (Array.isArray(this._options.childProcess)) {
       // @ts-ignore
       this._childProcess = spawn(...this._options.childProcess);
+    } else if (this._options.childProcess) {
+      this._childProcess = this._options.childProcess;
     }
 
     // @ts-ignore
@@ -74,6 +100,7 @@ export class SingleTest {
       console.log("[makeSingleTest] checkResults");
     }
     if (this._options.checkResults) {
+      console.log("!!!!!", this._results);
       if (this._results) {
         return this._options.checkResults(this._results);
       }
@@ -95,10 +122,21 @@ export class SingleTest {
       await this._options.tearDownTest();
     }
   }
+
+  public async onError(err: ErrorWithHistory): Promise<void> {
+    if (this._debug) {
+      console.log("[makeSingleTest] onError");
+    }
+    if (this._options.onError) {
+      return this._options.onError(err);
+    } else {
+      throw err;
+    }
+  }
 }
 
 export function makeSingleTest(
-  options: Options = {
+  options: SingleOptions = {
     // @ts-ignore
     childProcess: null
   }
@@ -110,9 +148,15 @@ export function makeSingleTest(
       await singleTest.setupTest();
       await singleTest.spawnTest();
       await singleTest.checkResults();
+      console.log("success");
     } catch (err) {
-      await singleTest.tearDownTest();
-      throw err;
+      console.log("error");
+      try {
+        await singleTest.onError(err);
+      } catch (e) {
+        await singleTest.tearDownTest();
+        throw e;
+      }
     }
 
     await singleTest.tearDownTest();
