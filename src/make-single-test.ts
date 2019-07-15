@@ -100,7 +100,6 @@ export class SingleTest {
       console.log("[makeSingleTest] checkResults");
     }
     if (this._options.checkResults) {
-      console.log("!!!!!", this._results);
       if (this._results) {
         return this._options.checkResults(this._results);
       }
@@ -148,9 +147,7 @@ export function makeSingleTest(
       await singleTest.setupTest();
       await singleTest.spawnTest();
       await singleTest.checkResults();
-      console.log("success");
     } catch (err) {
-      console.log("error");
       try {
         await singleTest.onError(err);
       } catch (e) {
