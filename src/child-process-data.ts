@@ -8,17 +8,24 @@ import MainOptions, { Options } from "./options";
 export class ErrorWithHistory extends Error {
   public readonly result: Result;
 
-  public constructor(code: number, result: Result) {
-    const [message, ...stack] = stripAnsi(result.err()).split("\n");
+  public constructor(code: number | Error, result: Result) {
+    if (typeof code === "number") {
+      const [message, ...stack] = stripAnsi(result.err()).split("\n");
 
-    if (code) {
-      super(`${message}
-child process stream closed with code ${code}`);
+      if (code) {
+        super(`${message}
+  child process stream closed with code ${code}`);
+      } else {
+        super(message);
+      }
+
+      this.stack = stack.join("\n");
     } else {
-      super(message);
+      super(code.message);
+
+      this.stack = code.stack;
     }
 
-    this.stack = stack.join("\n");
     this.result = result;
   }
 }

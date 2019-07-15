@@ -56,7 +56,7 @@ export class SingleTest {
         if (err instanceof ErrorWithHistory) {
           return onError.call(this, err);
         } else if (this._results !== null) {
-          return onError.call(this, new ErrorWithHistory(0, this._results));
+          return onError.call(this, new ErrorWithHistory(err, this._results));
         } else {
           throw err;
         }
