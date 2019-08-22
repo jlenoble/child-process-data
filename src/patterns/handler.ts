@@ -45,6 +45,6 @@ export default abstract class Handler extends ValidationWindow<void> {
     return { ...this._dataCallbacks };
   }
 
-  public dataUp(): void {}
-  public dataDown(): void {}
+  public dataUp(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
+  public dataDown(): void {} // eslint-disable-line @typescript-eslint/no-empty-function
 }

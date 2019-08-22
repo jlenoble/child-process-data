@@ -31,7 +31,7 @@ export class ErrorWithHistory extends Error {
 }
 
 export class ChildProcessData extends Pool<Result> {
-  protected static _silent: boolean = false;
+  protected static _silent = false;
 
   public static mute(): void {
     ChildProcessData._silent = true;
