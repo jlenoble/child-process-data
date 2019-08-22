@@ -83,16 +83,19 @@ export class SingleTest {
     }
 
     if (Array.isArray(this._options.childProcess)) {
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore if array then it is SpawnArguments
       this._childProcess = spawn(...this._options.childProcess);
     } else if (this._options.childProcess) {
       this._childProcess = this._options.childProcess;
     }
 
-    // @ts-ignore
-    this._results = await childProcessData(this._childProcess, {
-      silent: this._silent
-    });
+    this._results = await childProcessData(
+      this._childProcess as ChildProcessWithReadableStdStreams,
+      {
+        silent: this._silent
+      }
+    );
   }
 
   public async checkResults(): Promise<void> {
@@ -135,10 +138,7 @@ export class SingleTest {
 }
 
 export function makeSingleTest(
-  options: SingleOptions = {
-    // @ts-ignore
-    childProcess: null
-  }
+  options: SingleOptions = {}
 ): () => Promise<void> {
   return async function(): Promise<void> {
     const singleTest = new SingleTest(options);

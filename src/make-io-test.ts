@@ -214,6 +214,7 @@ export class IOTest extends SingleTest {
 
   public async tearDownTest(): Promise<void> {
     if (this._childProcess && this._childProcess.stdin) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore May not have been opened in parent
       this._childProcess.stdin.pause();
     }
@@ -221,12 +222,7 @@ export class IOTest extends SingleTest {
   }
 }
 
-export function makeIOTest(
-  options: IOOptions = {
-    // @ts-ignore
-    childProcess: null
-  }
-): () => Promise<void> {
+export function makeIOTest(options: IOOptions = {}): () => Promise<void> {
   return async function(): Promise<void> {
     const ioTest = new IOTest(options);
 

@@ -2,7 +2,7 @@ import { ValidationWindow } from "promise-plumber";
 
 export interface ColoringOptions {
   coloredChunk: string;
-  logger: [object, string];
+  logger: [{ [key: string]: (...args: string[]) => void }, string];
 }
 
 export interface CallbackOptions {

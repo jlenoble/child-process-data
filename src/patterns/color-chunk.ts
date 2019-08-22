@@ -48,7 +48,8 @@ export default function ColorChunkFactory({
       coloredChunk,
       logger: [_logger, method],
       match
-      // @ts-ignore result *IS* assigned
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore result *IS* assigned since found is true
     } = result;
 
     const index = match.index || 0;
@@ -58,7 +59,6 @@ export default function ColorChunkFactory({
     }
 
     if (!silent) {
-      // @ts-ignore
       _logger[method](coloredChunk);
     }
 

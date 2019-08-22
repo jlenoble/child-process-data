@@ -40,11 +40,14 @@ export class ChildProcessData extends Pool<Result> {
     ChildProcessData._silent = false;
   }
 
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore Not set when ctor is called implicitly and passed an Executor
   protected readonly _childProcess: ChildProcessWithReadableStdStreams;
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore Not set when ctor is called implicitly and passed an Executor
   protected readonly _options: MainOptions;
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore Not set when ctor is called implicitly and passed an Executor
   protected readonly _result: Result;
 
   public get results(): Result {

@@ -20,7 +20,6 @@ describe(`Testing makeSingleTest factory`, (): void => {
       }) throws a 'checkResults callback must be overridden' error`, async (): Promise<
     void
   > => {
-    // @ts-ignore
     const test = makeSingleTest({
       childProcess: ["echo", ["Hello", "World!"]]
     });
@@ -74,7 +73,6 @@ describe(`Testing makeSingleTest factory`, (): void => {
         expect(all).to.match(/Finished 'subtest'/);
       },
       async tearDownTest(): Promise<void> {
-        // @ts-ignore
         await del(toFile);
       }
     });
@@ -112,7 +110,6 @@ describe(`Testing makeSingleTest factory`, (): void => {
         expect(all).to.match(/Finished 'subtest'/);
       },
       async tearDownTest(): Promise<void> {
-        // @ts-ignore
         await del(toFile);
       }
     });
