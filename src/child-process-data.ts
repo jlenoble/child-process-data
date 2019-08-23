@@ -1,6 +1,7 @@
 import stripAnsi from "strip-ansi";
 import { Pool, Executor } from "promise-plumber";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
+import toChildProcess, { SpawnArguments } from "./to-child-process";
 import Result from "./messages/result";
 import checkChildProcess from "./check-child-process";
 import MainOptions, { Options } from "./options";
@@ -55,7 +56,10 @@ export class ChildProcessData extends Pool<Result> {
   }
 
   public constructor(
-    childProcess: ChildProcessWithReadableStdStreams | Executor<Result[]>,
+    childProcess:
+      | ChildProcessWithReadableStdStreams
+      | SpawnArguments
+      | Executor<Result[]>,
     options: Options = {}
   ) {
     if (typeof childProcess === "function") {
@@ -66,6 +70,10 @@ export class ChildProcessData extends Pool<Result> {
     super();
 
     try {
+      if (Array.isArray(childProcess)) {
+        childProcess = toChildProcess(childProcess);
+      }
+
       checkChildProcess(childProcess);
 
       this._childProcess = childProcess;
