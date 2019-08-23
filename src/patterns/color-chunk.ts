@@ -59,6 +59,8 @@ export default function ColorChunkFactory({
     }
 
     if (!silent) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore Limitation of TS: [a,b]|[c,d] is read here as [a|c,b|d]
       _logger[method](coloredChunk);
     }
 
