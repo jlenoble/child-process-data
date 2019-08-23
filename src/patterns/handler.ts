@@ -1,8 +1,16 @@
 import { ValidationWindow } from "promise-plumber";
 
+type Methods<T> = T extends Console
+  ? "log" | "warn" | "error" | "info"
+  : T extends NodeJS.WriteStream
+  ? "write"
+  : "log";
+
+type Logger<T> = [T, Methods<T>];
+
 export interface ColoringOptions {
   coloredChunk: string;
-  logger: [{ [key: string]: (...args: string[]) => void }, string];
+  logger: Logger<Console> | Logger<NodeJS.WriteStream>;
 }
 
 export interface CallbackOptions {
