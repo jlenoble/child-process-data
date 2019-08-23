@@ -1,14 +1,8 @@
-import { spawn, SpawnOptionsWithoutStdio, SpawnOptions } from "child_process";
+import toChildProcess, { SpawnArguments } from "./to-child-process";
 import childProcessData, { ErrorWithHistory } from "./child-process-data";
 import { ChildProcessWithReadableStdStreams } from "./child-process";
 import Result from "./messages/result";
 import deepKill from "deepkill";
-
-type SpawnArguments =
-  | [string]
-  | [string, SpawnOptionsWithoutStdio | SpawnOptions]
-  | [string, string[]]
-  | [string, string[], SpawnOptionsWithoutStdio | SpawnOptions];
 
 export interface SingleOptions {
   debug?: boolean;
@@ -83,9 +77,7 @@ export class SingleTest {
     }
 
     if (Array.isArray(this._options.childProcess)) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore if array then it is SpawnArguments
-      this._childProcess = spawn(...this._options.childProcess);
+      this._childProcess = toChildProcess(this._options.childProcess);
     } else if (this._options.childProcess) {
       this._childProcess = this._options.childProcess;
     }

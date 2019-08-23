@@ -1,4 +1,5 @@
-import { spawn, SpawnOptionsWithoutStdio } from "child_process";
+import { spawn } from "child_process";
+import toChildProcess from "./to-child-process";
 import { ChildProcessData } from "./child-process-data";
 import { SingleTest, SingleOptions } from "./make-single-test";
 import { waitUntil } from "promise-plumber";
@@ -63,27 +64,7 @@ export class IOTest extends SingleTest {
 
     if (this._options.childProcess) {
       if (Array.isArray(this._options.childProcess)) {
-        const [cmd, args, _options] = this._options.childProcess as [
-          string,
-          string[],
-          SpawnOptionsWithoutStdio
-        ];
-
-        if (_options && _options.stdio) {
-          const stdio = _options.stdio;
-
-          if (stdio !== "pipe" && Array.isArray(stdio)) {
-            if (!(stdio as string[]).every((opt): boolean => opt === "pipe")) {
-              throw new Error("Bad stdio option, must be 'pipe'");
-            }
-          }
-        }
-
-        this._childProcess = spawn(
-          cmd,
-          args as string[],
-          (_options as SpawnOptionsWithoutStdio) || { stdio: "pipe" }
-        );
+        this._childProcess = toChildProcess(this._options.childProcess);
       }
 
       this.checkStdio();
