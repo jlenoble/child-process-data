@@ -3,8 +3,8 @@ import { ChildProcessWithReadableStdStreams } from "./child-process";
 
 export type SpawnArguments =
   | [string]
-  | [string, SpawnOptionsWithoutStdio]
-  | [string, string[], SpawnOptionsWithoutStdio | undefined];
+  | [string, SpawnOptionsWithoutStdio | undefined]
+  | [string, string[] | undefined, SpawnOptionsWithoutStdio | undefined];
 
 export default function toChildProcess(
   args: SpawnArguments
