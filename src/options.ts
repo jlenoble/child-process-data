@@ -8,6 +8,7 @@ export interface Options {
   format?: string;
   silent?: boolean;
   timeout?: number;
+  noTimeout?: true;
   dataCallbacks?: DataCallbacks;
 }
 
@@ -35,7 +36,7 @@ export default class MainOptions {
       {
         format: "utf-8",
         silent: false,
-        timeout: 60000,
+        timeout: opts.noTimeout ? 31536000000 : 60000,
         dataCallbacks: {}
       },
       opts
