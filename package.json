@@ -1,6 +1,6 @@
 {
   "name": "child-process-data",
-  "version": "0.8.0-0",
+  "version": "0.8.0-1",
   "description": "A helper to handle data output from child processes",
   "keywords": [
     "child",
