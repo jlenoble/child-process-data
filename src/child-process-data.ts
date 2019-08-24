@@ -128,7 +128,7 @@ export class ChildProcessData extends Pool<Result> {
 }
 
 export default async function childProcessData(
-  childProcess: ChildProcessWithReadableStdStreams,
+  childProcess: ChildProcessWithReadableStdStreams | SpawnArguments,
   opts: Options = {}
 ): Promise<Result> {
   const [results] = await new ChildProcessData(childProcess, opts);
